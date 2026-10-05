@@ -4,12 +4,15 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>OCR Enablement | Malaysia NRIC</title>
+<title>OCR Enablement | Malaysia NRIC Reader</title>
 
-<!-- OCR library runs in background only -->
 <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
 
 <style>
+
+/* =========================================================
+   GLOBAL
+========================================================= */
 
 * {
     box-sizing: border-box;
@@ -18,17 +21,34 @@
 }
 
 :root {
-    --primary: #2563eb;
-    --primary-dark: #1d4ed8;
+    --navy: #17152d;
+    --navy2: #25204b;
+    --purple: #633b87;
+    --magenta: #c43b78;
+
+    --primary: #6d4aff;
+    --primary2: #a63d91;
+
     --text: #101828;
+    --text2: #344054;
     --muted: #667085;
+    --light-muted: #98a2b3;
+
     --border: #e4e7ec;
+
     --success: #067647;
     --success-bg: #ecfdf3;
+
     --danger: #d92d20;
 }
 
+
+/* =========================================================
+   DAYTHREE-INSPIRED BACKGROUND
+========================================================= */
+
 body {
+
     min-height: 100vh;
 
     font-family:
@@ -40,53 +60,91 @@ body {
     color: var(--text);
 
     background:
+
         radial-gradient(
-            circle at 8% 10%,
-            rgba(37,99,235,.14),
+            circle at 8% 12%,
+            rgba(124, 70, 160, .58),
+            transparent 28%
+        ),
+
+        radial-gradient(
+            circle at 92% 12%,
+            rgba(202, 59, 121, .38),
             transparent 27%
         ),
+
         radial-gradient(
-            circle at 90% 15%,
-            rgba(6,182,212,.12),
-            transparent 27%
-        ),
-        radial-gradient(
-            circle at 50% 100%,
-            rgba(99,102,241,.10),
+            circle at 75% 90%,
+            rgba(83, 75, 164, .45),
             transparent 30%
         ),
+
         linear-gradient(
             135deg,
-            #f8fbff,
-            #eef5ff 50%,
-            #f9fcff
+            #17152d 0%,
+            #242047 38%,
+            #38265b 68%,
+            #201936 100%
         );
 
     background-attachment: fixed;
 }
 
 
-/* subtle background grid */
+/* subtle grid */
 
 body::before {
+
     content: "";
 
     position: fixed;
+
     inset: 0;
 
     background-image:
+
         linear-gradient(
-            rgba(37,99,235,.035) 1px,
+            rgba(255,255,255,.025) 1px,
             transparent 1px
         ),
+
         linear-gradient(
             90deg,
-            rgba(37,99,235,.035) 1px,
+            rgba(255,255,255,.025) 1px,
             transparent 1px
         );
 
     background-size:
-        40px 40px;
+        42px 42px;
+
+    pointer-events: none;
+
+    z-index: -2;
+}
+
+
+/* glow */
+
+body::after {
+
+    content: "";
+
+    position: fixed;
+
+    width: 500px;
+
+    height: 500px;
+
+    right: -180px;
+
+    bottom: -180px;
+
+    border-radius: 50%;
+
+    background:
+        rgba(198, 61, 133, .16);
+
+    filter: blur(80px);
 
     pointer-events: none;
 
@@ -94,9 +152,9 @@ body::before {
 }
 
 
-/* ================================
+/* =========================================================
    HEADER
-================================ */
+========================================================= */
 
 header {
 
@@ -109,27 +167,28 @@ header {
 
     align-items: center;
 
-    justify-content:
-        space-between;
-
-    background:
-        rgba(255,255,255,.87);
-
-    backdrop-filter:
-        blur(18px);
-
-    border-bottom:
-        1px solid rgba(228,231,236,.9);
+    justify-content: space-between;
 
     position: sticky;
 
     top: 0;
 
-    z-index: 50;
+    z-index: 100;
+
+    background:
+        rgba(20,17,42,.72);
+
+    backdrop-filter:
+        blur(20px);
+
+    border-bottom:
+        1px solid
+        rgba(255,255,255,.09);
 }
 
 
 .brand {
+
     display: flex;
 
     align-items: center;
@@ -140,9 +199,9 @@ header {
 
 .brand-icon {
 
-    width: 42px;
+    width: 43px;
 
-    height: 42px;
+    height: 43px;
 
     display: flex;
 
@@ -150,13 +209,13 @@ header {
 
     justify-content: center;
 
-    border-radius: 12px;
+    border-radius: 13px;
 
     background:
         linear-gradient(
             135deg,
-            #2563eb,
-            #06b6d4
+            #8b5cf6,
+            #d9468d
         );
 
     color: white;
@@ -164,12 +223,14 @@ header {
     font-size: 21px;
 
     box-shadow:
-        0 6px 18px
-        rgba(37,99,235,.23);
+        0 8px 25px
+        rgba(151,74,200,.30);
 }
 
 
 .brand h2 {
+
+    color: white;
 
     font-size: 18px;
 }
@@ -179,115 +240,117 @@ header {
 
     margin-top: 3px;
 
-    color: var(--muted);
+    color:
+        rgba(255,255,255,.60);
 
-    font-size: 11px;
+    font-size: 10px;
 }
 
 
-.status {
+.system-ready {
 
     padding:
         7px 12px;
 
+    border:
+        1px solid
+        rgba(134,239,172,.25);
+
     border-radius:
         30px;
 
-    border:
-        1px solid #abefc6;
-
     background:
-        var(--success-bg);
+        rgba(22,163,74,.13);
 
     color:
-        var(--success);
+        #86efac;
 
-    font-size:
-        10px;
+    font-size: 10px;
 
-    font-weight:
-        700;
+    font-weight: 700;
 }
 
 
-/* ================================
-   PAGE
-================================ */
+/* =========================================================
+   CONTAINER
+========================================================= */
 
 .container {
 
     width: 92%;
 
-    max-width:
-        1250px;
+    max-width: 1350px;
 
     margin:
-        45px auto 70px;
+        48px auto 70px;
 }
 
 
-/* ================================
+/* =========================================================
    HERO
-================================ */
+========================================================= */
 
 .hero {
 
-    max-width:
-        760px;
+    max-width: 820px;
 
     margin:
-        0 auto 35px;
+        0 auto 40px;
 
-    text-align:
-        center;
+    text-align: center;
 }
 
 
 .hero-badge {
 
-    display:
-        inline-block;
+    display: inline-flex;
+
+    align-items: center;
+
+    gap: 6px;
 
     padding:
-        7px 12px;
+        7px 13px;
 
-    margin-bottom:
-        14px;
+    margin-bottom: 15px;
 
     border:
-        1px solid #b2ccff;
+        1px solid
+        rgba(255,255,255,.18);
 
-    border-radius:
-        30px;
+    border-radius: 30px;
 
     background:
-        rgba(255,255,255,.7);
+        rgba(255,255,255,.08);
 
     color:
-        #175cd3;
+        rgba(255,255,255,.90);
 
-    font-size:
-        10px;
+    backdrop-filter:
+        blur(10px);
 
-    font-weight:
-        700;
+    font-size: 10px;
+
+    font-weight: 800;
+
+    letter-spacing: .4px;
 }
 
 
 .hero h1 {
 
-    margin-bottom:
-        12px;
+    margin-bottom: 13px;
+
+    color: white;
 
     font-size:
         clamp(
-            30px,
+            32px,
             5vw,
-            44px
+            48px
         );
 
-    letter-spacing:
-        -1.3px;
+    letter-spacing: -1.6px;
 }
 
 
@@ -296,161 +359,228 @@ header {
     background:
         linear-gradient(
             90deg,
-            #2563eb,
-            #0891b2
+            #ffffff,
+            #e9b5d2
         );
 
-    -webkit-background-clip:
-        text;
+    -webkit-background-clip: text;
 
-    color:
-        transparent;
+    color: transparent;
 }
 
 
 .hero p {
 
-    max-width:
-        650px;
+    max-width: 690px;
 
-    margin:
-        auto;
+    margin: auto;
 
     color:
-        var(--muted);
+        rgba(255,255,255,.70);
 
-    font-size:
-        13px;
+    font-size: 13px;
 
-    line-height:
-        1.7;
+    line-height: 1.7;
 }
 
 
-/* ================================
-   MAIN GRID
-================================ */
-
-.main-grid {
-
-    display:
-        grid;
-
-    grid-template-columns:
-        .9fr 1.1fr;
-
-    gap:
-        24px;
-}
-
-
-/* ================================
+/* =========================================================
    CARD
-================================ */
+========================================================= */
 
 .card {
 
-    padding:
-        26px;
+    padding: 28px;
 
     border:
         1px solid
-        rgba(228,231,236,.9);
+        rgba(255,255,255,.15);
 
-    border-radius:
-        20px;
+    border-radius: 22px;
 
     background:
-        rgba(255,255,255,.9);
-
-    backdrop-filter:
-        blur(18px);
+        rgba(255,255,255,.96);
 
     box-shadow:
-        0 15px 40px
-        rgba(16,24,40,.07);
+        0 22px 60px
+        rgba(0,0,0,.18);
 }
 
 
 .card-title {
 
-    margin-bottom:
-        20px;
+    margin-bottom: 22px;
 }
 
 
 .card-title h3 {
 
-    margin-bottom:
-        5px;
+    display: flex;
 
-    font-size:
-        17px;
+    align-items: center;
+
+    margin-bottom: 6px;
+
+    color: var(--text);
+
+    font-size: 18px;
 }
 
 
 .card-title p {
 
-    color:
-        var(--muted);
+    color: var(--muted);
 
-    font-size:
-        11px;
+    font-size: 11px;
 
-    line-height:
-        1.5;
+    line-height: 1.6;
 }
 
 
-/* ================================
-   UPLOAD
-================================ */
+.step {
+
+    width: 27px;
+
+    height: 27px;
+
+    display: inline-flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    margin-right: 9px;
+
+    border-radius: 50%;
+
+    background:
+        linear-gradient(
+            135deg,
+            #6d4aff,
+            #a63d91
+        );
+
+    color: white;
+
+    font-size: 10px;
+
+    font-weight: 800;
+}
+
+
+/* =========================================================
+   UPLOAD GRID
+========================================================= */
+
+.upload-grid {
+
+    display: grid;
+
+    grid-template-columns:
+        1fr 1fr;
+
+    gap: 20px;
+}
+
+
+.upload-column {
+
+    min-width: 0;
+}
+
+
+.side-header {
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    margin-bottom: 9px;
+}
+
+
+.side-header strong {
+
+    color: var(--text2);
+
+    font-size: 12px;
+}
+
+
+.badge {
+
+    padding:
+        5px 8px;
+
+    border-radius: 20px;
+
+    font-size: 8px;
+
+    font-weight: 800;
+}
+
+
+.badge.required {
+
+    background:
+        #f0ebff;
+
+    color:
+        #6941c6;
+}
+
+
+.badge.optional {
+
+    background:
+        #f2f4f7;
+
+    color:
+        #667085;
+}
+
+
+/* =========================================================
+   UPLOAD BOX
+========================================================= */
 
 .upload-zone {
 
-    width:
-        100%;
+    width: 100%;
 
-    min-height:
-        300px;
-
-    display:
-        flex;
-
-    flex-direction:
-        column;
-
-    justify-content:
-        center;
-
-    align-items:
-        center;
+    min-height: 270px;
 
     padding:
-        35px 25px;
+        28px 20px;
+
+    display: flex;
+
+    flex-direction: column;
+
+    align-items: center;
+
+    justify-content: center;
 
     border:
         2px dashed
-        #b6c6da;
+        #c8bdd9;
 
-    border-radius:
-        17px;
+    border-radius: 17px;
 
     background:
         linear-gradient(
             145deg,
-            #fbfdff,
-            #f5f9ff
+            #fdfcff,
+            #f7f4fb
         );
 
-    text-align:
-        center;
+    cursor: pointer;
 
-    cursor:
-        pointer;
+    text-align: center;
 
-    transition:
-        .25s;
+    transition: .25s ease;
 }
 
 
@@ -458,251 +588,228 @@ header {
 .upload-zone.dragover {
 
     border-color:
-        var(--primary);
+        #8b5cf6;
 
     background:
-        #f0f6ff;
+        #faf7ff;
 
     transform:
         translateY(-2px);
 
     box-shadow:
-        0 10px 30px
-        rgba(37,99,235,.08);
+        0 12px 30px
+        rgba(109,74,255,.10);
 }
 
 
 .upload-icon {
 
-    width:
-        78px;
+    width: 72px;
 
-    height:
-        78px;
+    height: 72px;
 
-    display:
-        flex;
+    display: flex;
 
-    align-items:
-        center;
+    align-items: center;
 
-    justify-content:
-        center;
+    justify-content: center;
 
-    margin-bottom:
-        18px;
+    margin-bottom: 16px;
 
     border:
         1px solid
-        #d5e5ff;
+        #e2d8f3;
 
-    border-radius:
-        21px;
+    border-radius: 19px;
 
     background:
         linear-gradient(
             135deg,
-            #e8f1ff,
-            #e8fbff
+            #f1ebff,
+            #fdeaf4
         );
 
-    font-size:
-        38px;
+    font-size: 34px;
 }
 
 
 .upload-zone h4 {
 
-    margin-bottom:
-        7px;
+    margin-bottom: 7px;
 
-    font-size:
-        16px;
+    color: var(--text);
+
+    font-size: 14px;
 }
 
 
 .upload-zone p {
 
-    margin-bottom:
-        18px;
+    margin-bottom: 16px;
 
-    color:
-        var(--muted);
+    color: var(--muted);
 
-    font-size:
-        11px;
+    font-size: 10px;
 }
 
 
-.choose-file {
+.choose-button {
 
     padding:
-        10px 18px;
+        9px 16px;
 
-    margin-bottom:
-        12px;
+    margin-bottom: 10px;
 
     border:
         1px solid
-        #b2ccff;
+        #d7c7f2;
 
-    border-radius:
-        9px;
+    border-radius: 8px;
 
-    background:
-        white;
+    background: white;
 
     color:
-        #175cd3;
+        #6941c6;
 
-    font-size:
-        11px;
+    font-size: 10px;
 
-    font-weight:
-        700;
+    font-weight: 800;
 }
 
 
-.file-support {
+.file-type {
 
     color:
-        #98a2b3;
+        var(--light-muted);
 
-    font-size:
-        9px;
+    font-size: 8px;
 }
 
 
-#fileInput {
+input[type="file"] {
 
-    display:
-        none;
+    display: none;
 }
 
 
-/* ================================
+/* =========================================================
    FILE INFO
-================================ */
+========================================================= */
 
-.file-box {
+.file-info {
 
-    display:
-        none;
+    display: none;
 
-    align-items:
-        center;
+    align-items: center;
 
-    justify-content:
-        space-between;
+    justify-content: space-between;
 
-    margin-top:
-        14px;
+    gap: 10px;
+
+    margin-top: 11px;
 
     padding:
-        11px 13px;
+        10px 12px;
 
     border:
         1px solid
         var(--border);
 
-    border-radius:
-        10px;
+    border-radius: 10px;
 
-    background:
-        white;
+    background: white;
 }
 
 
-.file-details {
+.file-left {
 
-    display:
-        flex;
+    display: flex;
 
-    align-items:
-        center;
+    align-items: center;
 
-    gap:
-        10px;
+    gap: 9px;
+
+    min-width: 0;
 }
 
 
-.file-details-icon {
+.file-document-icon {
 
-    width:
-        38px;
+    width: 35px;
 
-    height:
-        38px;
+    height: 35px;
 
-    display:
-        flex;
+    flex-shrink: 0;
 
-    align-items:
-        center;
+    display: flex;
 
-    justify-content:
-        center;
+    align-items: center;
 
-    border-radius:
-        8px;
+    justify-content: center;
+
+    border-radius: 8px;
 
     background:
-        #eff6ff;
+        #f4f0ff;
+}
+
+
+.file-text {
+
+    min-width: 0;
 }
 
 
 .file-name {
 
-    font-size:
-        11px;
+    max-width: 220px;
 
-    font-weight:
-        700;
+    overflow: hidden;
+
+    text-overflow: ellipsis;
+
+    white-space: nowrap;
+
+    color: var(--text2);
+
+    font-size: 10px;
+
+    font-weight: 700;
 }
 
 
 .file-size {
 
-    margin-top:
-        3px;
+    margin-top: 3px;
 
     color:
-        #98a2b3;
+        var(--light-muted);
 
-    font-size:
-        9px;
+    font-size: 8px;
 }
 
 
-.remove {
+.remove-button {
 
-    width:
-        29px;
+    width: 28px;
 
-    height:
-        29px;
+    height: 28px;
 
-    border:
-        0;
+    border: 0;
 
-    border-radius:
-        7px;
+    border-radius: 7px;
 
-    background:
-        transparent;
+    background: transparent;
 
-    color:
-        #667085;
+    color: var(--muted);
 
-    cursor:
-        pointer;
+    cursor: pointer;
 
-    font-size:
-        20px;
+    font-size: 18px;
 }
 
 
-.remove:hover {
+.remove-button:hover {
 
     background:
         #fef3f2;
@@ -712,513 +819,478 @@ header {
 }
 
 
-/* ================================
+/* =========================================================
    PREVIEW
-================================ */
+========================================================= */
 
-.preview-container {
+.preview-box {
 
-    display:
-        none;
+    display: none;
 
-    margin-top:
-        14px;
+    margin-top: 11px;
 
-    overflow:
-        hidden;
+    overflow: hidden;
 
     border:
         1px solid
         var(--border);
 
-    border-radius:
-        11px;
+    border-radius: 10px;
 
     background:
         #f8fafc;
 }
 
 
-.preview-header {
+.preview-title {
 
-    display:
-        flex;
+    display: flex;
 
-    justify-content:
-        space-between;
+    justify-content: space-between;
 
     padding:
-        9px 12px;
+        8px 10px;
 
     border-bottom:
         1px solid
         var(--border);
 
-    background:
-        white;
+    background: white;
 
-    color:
-        #475467;
+    color: var(--muted);
 
-    font-size:
-        9px;
+    font-size: 8px;
 
-    font-weight:
-        700;
+    font-weight: 800;
 }
 
 
 .preview-ready {
 
-    color:
-        var(--success);
+    color: var(--success);
 }
 
 
-#preview {
+.preview-box img {
 
-    display:
-        block;
+    display: block;
 
-    width:
-        100%;
+    width: 100%;
 
-    max-height:
-        330px;
+    height: 230px;
 
-    padding:
-        14px;
+    padding: 11px;
 
-    object-fit:
-        contain;
+    object-fit: contain;
 }
 
 
-/* ================================
-   PROCESS BUTTON
-================================ */
+/* =========================================================
+   BUTTON
+========================================================= */
 
-#scanButton {
+#extractButton {
 
-    width:
-        100%;
+    width: 100%;
 
-    margin-top:
-        16px;
+    margin-top: 22px;
 
-    padding:
-        14px;
+    padding: 14px;
 
-    border:
-        0;
+    border: 0;
 
-    border-radius:
-        10px;
+    border-radius: 10px;
 
     background:
         linear-gradient(
             90deg,
-            #2563eb,
-            #0ea5e9
+            #6d4aff,
+            #a63d91
         );
 
-    color:
-        white;
+    color: white;
 
-    cursor:
-        pointer;
+    cursor: pointer;
 
-    font-size:
-        12px;
+    font-size: 12px;
 
-    font-weight:
-        700;
+    font-weight: 800;
 
     box-shadow:
-        0 7px 18px
-        rgba(37,99,235,.20);
+        0 8px 22px
+        rgba(109,74,255,.22);
 
-    transition:
-        .2s;
+    transition: .2s;
 }
 
 
-#scanButton:hover:not(:disabled) {
+#extractButton:hover:not(:disabled) {
 
     transform:
         translateY(-1px);
-}
-
-
-#scanButton:disabled {
-
-    background:
-        #a8b3c5;
 
     box-shadow:
-        none;
-
-    cursor:
-        not-allowed;
+        0 12px 28px
+        rgba(109,74,255,.27);
 }
 
 
-/* ================================
+#extractButton:disabled {
+
+    background:
+        #b5adbf;
+
+    box-shadow: none;
+
+    cursor: not-allowed;
+}
+
+
+/* =========================================================
    PROGRESS
-================================ */
+========================================================= */
 
-.progress-container {
+.progress-area {
 
-    display:
-        none;
+    display: none;
 
-    margin-top:
-        16px;
+    margin-top: 17px;
+
+    padding: 14px;
+
+    border:
+        1px solid
+        var(--border);
+
+    border-radius: 10px;
+
+    background:
+        #fafafa;
 }
 
 
-.progress-text {
+.progress-item {
 
-    display:
-        flex;
+    margin-bottom: 12px;
+}
 
-    justify-content:
-        space-between;
 
-    margin-bottom:
-        7px;
+.progress-item:last-child {
 
-    color:
-        var(--muted);
+    margin-bottom: 0;
+}
 
-    font-size:
-        9px;
+
+.progress-label {
+
+    display: flex;
+
+    justify-content: space-between;
+
+    margin-bottom: 6px;
+
+    color: var(--muted);
+
+    font-size: 9px;
 }
 
 
 .progress-track {
 
-    height:
-        7px;
+    height: 7px;
 
-    overflow:
-        hidden;
+    overflow: hidden;
 
-    border-radius:
-        20px;
+    border-radius: 20px;
 
     background:
         #eaecf0;
 }
 
 
-#progressBar {
+.progress-bar {
 
-    width:
-        0%;
+    width: 0%;
 
-    height:
-        100%;
+    height: 100%;
 
-    border-radius:
-        20px;
+    border-radius: 20px;
 
     background:
         linear-gradient(
             90deg,
-            #2563eb,
-            #06b6d4
+            #6d4aff,
+            #d9468d
         );
 
     transition:
-        width .2s;
+        width .2s ease;
 }
 
 
-/* ================================
-   RESULTS
-================================ */
+/* =========================================================
+   PRIVACY
+========================================================= */
 
-.result-status {
+.privacy {
 
-    display:
-        flex;
-
-    align-items:
-        center;
-
-    gap:
-        8px;
-
-    margin-bottom:
-        17px;
+    margin-top: 16px;
 
     padding:
         11px 13px;
 
     border:
         1px solid
-        #e4e7ec;
+        #eee9f3;
 
-    border-radius:
-        10px;
+    border-radius: 9px;
+
+    background:
+        #faf8fc;
+
+    color: var(--muted);
+
+    font-size: 9px;
+
+    line-height: 1.5;
+}
+
+
+/* =========================================================
+   RESULTS
+========================================================= */
+
+.results-card {
+
+    margin-top: 25px;
+}
+
+
+.status-box {
+
+    margin-bottom: 18px;
+
+    padding:
+        11px 13px;
+
+    border:
+        1px solid
+        var(--border);
+
+    border-radius: 9px;
 
     background:
         #f8fafc;
 
-    color:
-        #475467;
+    color: var(--muted);
 
-    font-size:
-        10px;
+    font-size: 10px;
+
+    font-weight: 600;
 }
 
 
-.result-status.completed {
+.status-box.completed {
 
     border-color:
         #abefc6;
 
     background:
-        #ecfdf3;
+        var(--success-bg);
 
     color:
         var(--success);
 }
 
 
-.results {
+.result-grid {
 
-    display:
-        grid;
+    display: grid;
 
     grid-template-columns:
         1fr 1fr;
 
-    gap:
-        12px;
+    gap: 12px;
 }
 
 
-.result {
+.result-field {
 
-    padding:
-        13px;
+    padding: 14px;
 
     border:
         1px solid
         var(--border);
 
-    border-radius:
-        10px;
+    border-radius: 10px;
 
     background:
         #fafbfc;
 }
 
 
-.result.full {
+.result-field.full {
 
     grid-column:
         1 / -1;
 }
 
 
-.result label {
+.result-field label {
 
-    display:
-        block;
+    display: block;
 
-    margin-bottom:
-        6px;
+    margin-bottom: 6px;
 
-    color:
-        var(--muted);
+    color: var(--muted);
 
-    font-size:
-        8px;
+    font-size: 8px;
 
-    font-weight:
-        800;
+    font-weight: 800;
 
-    letter-spacing:
-        .4px;
+    letter-spacing: .4px;
 
-    text-transform:
-        uppercase;
+    text-transform: uppercase;
 }
 
 
 .result-value {
 
-    min-height:
-        19px;
+    min-height: 19px;
 
-    color:
-        #344054;
+    color: var(--text2);
 
-    font-size:
-        12px;
+    font-size: 12px;
 
-    line-height:
-        1.5;
+    line-height: 1.5;
 
-    word-break:
-        break-word;
+    word-break: break-word;
 }
 
 
 .null {
 
     color:
-        #98a2b3;
+        var(--light-muted);
 }
 
 
-/* ================================
-   JSON
-================================ */
+/* =========================================================
+   JSON OUTPUT
+========================================================= */
 
 .json-card {
 
-    margin-top:
-        24px;
+    margin-top: 25px;
 }
 
 
 .json-header {
 
-    display:
-        flex;
+    display: flex;
 
-    justify-content:
-        space-between;
+    align-items: center;
 
-    align-items:
-        center;
+    justify-content: space-between;
 
-    margin-bottom:
-        14px;
+    gap: 15px;
+
+    margin-bottom: 14px;
 }
 
 
 .json-header h3 {
 
-    font-size:
-        15px;
+    display: flex;
+
+    align-items: center;
+
+    font-size: 17px;
 }
 
 
-.copy {
+.copy-button {
 
     padding:
         8px 13px;
 
     border:
         1px solid
-        #b2ccff;
+        #d7c7f2;
 
-    border-radius:
-        8px;
+    border-radius: 8px;
 
-    background:
-        white;
+    background: white;
 
     color:
-        #175cd3;
+        #6941c6;
 
-    cursor:
-        pointer;
+    cursor: pointer;
 
-    font-size:
-        10px;
+    font-size: 9px;
 
-    font-weight:
-        700;
+    font-weight: 800;
 }
 
 
 #jsonOutput {
 
-    width:
-        100%;
+    width: 100%;
 
-    min-height:
-        245px;
+    min-height: 290px;
 
-    padding:
-        16px;
+    padding: 17px;
 
-    border:
-        0;
+    border: 0;
 
-    border-radius:
-        12px;
+    border-radius: 12px;
 
-    outline:
-        none;
+    outline: none;
 
-    resize:
-        vertical;
+    resize: vertical;
 
     background:
-        #101828;
+        #161426;
 
     color:
-        #dbeafe;
+        #efe9ff;
 
     font-family:
         Consolas,
+        "Courier New",
         monospace;
 
-    font-size:
-        11px;
+    font-size: 10px;
 
-    line-height:
-        1.65;
+    line-height: 1.7;
 }
 
 
-/* ================================
-   PRIVACY
-================================ */
+/* =========================================================
+   FOOTER
+========================================================= */
 
-.privacy {
-
-    margin-top:
-        16px;
+footer {
 
     padding:
-        11px;
+        22px;
 
-    border:
-        1px solid
-        var(--border);
-
-    border-radius:
-        9px;
-
-    background:
-        #f8fafc;
+    text-align: center;
 
     color:
-        var(--muted);
+        rgba(255,255,255,.48);
 
-    font-size:
-        9px;
-
-    line-height:
-        1.5;
+    font-size: 9px;
 }
 
 
-/* ================================
+/* =========================================================
    RESPONSIVE
-================================ */
+========================================================= */
 
-@media(max-width:850px) {
+@media(max-width:800px) {
 
-    .main-grid {
+    .upload-grid {
 
         grid-template-columns:
             1fr;
@@ -1229,38 +1301,43 @@ header {
 
 @media(max-width:550px) {
 
+    header {
+
+        padding:
+            0 4%;
+    }
+
+
+    .system-ready {
+
+        display: none;
+    }
+
+
     .container {
 
-        width:
-            94%;
+        width: 94%;
+
+        margin-top: 30px;
     }
 
 
     .card {
 
-        padding:
-            18px;
+        padding: 18px;
     }
 
 
-    .results {
+    .result-grid {
 
         grid-template-columns:
             1fr;
     }
 
 
-    .result.full {
+    .result-field.full {
 
-        grid-column:
-            auto;
-    }
-
-
-    .status {
-
-        display:
-            none;
+        grid-column: auto;
     }
 
 }
@@ -1272,32 +1349,36 @@ header {
 <body>
 
 
+<!-- ======================================================
+     HEADER
+======================================================= -->
+
 <header>
 
-    <div class="brand">
+<div class="brand">
 
-        <div class="brand-icon">
-            ◉
-        </div>
+    <div class="brand-icon">
+        ◉
+    </div>
 
-        <div>
+    <div>
 
-            <h2>
-                OCR Enablement
-            </h2>
+        <h2>
+            OCR Enablement
+        </h2>
 
-            <p>
-                Document Information Extraction
-            </p>
-
-        </div>
+        <p>
+            Intelligent Document Extraction
+        </p>
 
     </div>
 
+</div>
 
-    <div class="status">
-        ● System Ready
-    </div>
+
+<div class="system-ready">
+    ● System Ready
+</div>
 
 </header>
 
@@ -1306,391 +1387,599 @@ header {
 <main class="container">
 
 
-<!-- HERO -->
+<!-- ======================================================
+     HERO
+======================================================= -->
 
 <section class="hero">
 
-    <div class="hero-badge">
-        ✦ DOCUMENT EXTRACTION
-    </div>
+<div class="hero-badge">
+    ✦ DOCUMENT EXTRACTION
+</div>
 
-    <h1>
-        Malaysia
-        <span>NRIC Reader</span>
-    </h1>
 
-    <p>
-        Upload a Malaysian MyKad image to automatically
-        read the document and convert the detected
-        information into structured data.
-    </p>
+<h1>
+    Malaysia
+    <span>NRIC Reader</span>
+</h1>
+
+
+<p>
+    Upload the front and back of a Malaysian MyKad
+    to automatically extract visible identity information
+    into usable digital data.
+</p>
 
 </section>
 
 
 
-<div class="main-grid">
-
-
-<!-- ==============================
+<!-- ======================================================
      UPLOAD
-================================ -->
+======================================================= -->
 
 <section class="card">
 
-    <div class="card-title">
+<div class="card-title">
 
-        <h3>
-            Upload NRIC
-        </h3>
+<h3>
+    <span class="step">1</span>
+    Upload NRIC
+</h3>
 
-        <p>
-            Upload the front side of a Malaysian
-            MyKad for information extraction.
-        </p>
+<p>
+    Upload the front of the NRIC to begin.
+    The back image can also be uploaded for additional document reading.
+</p>
 
-    </div>
+</div>
 
 
-    <label
-        class="upload-zone"
-        id="uploadZone"
-        for="fileInput"
-    >
 
-        <div class="upload-icon">
-            🪪
-        </div>
+<div class="upload-grid">
 
-        <h4>
-            Drag & drop your MyKad here
-        </h4>
 
-        <p>
-            or select an image from your device
-        </p>
+<!-- ======================================================
+     FRONT
+======================================================= -->
 
-        <div class="choose-file">
-            Choose MyKad Image
-        </div>
+<div class="upload-column">
 
-        <div class="file-support">
-            JPG, JPEG or PNG • Maximum 10 MB
-        </div>
 
-    </label>
+<div class="side-header">
 
+<strong>
+    NRIC Front
+</strong>
 
-    <input
-        id="fileInput"
-        type="file"
-        accept="image/jpeg,image/png"
-    >
+<span class="badge required">
+    REQUIRED
+</span>
 
+</div>
 
 
-    <!-- FILE -->
 
-    <div
-        class="file-box"
-        id="fileBox"
-    >
+<label
+    class="upload-zone"
+    id="frontZone"
+    for="frontInput"
+>
 
-        <div class="file-details">
+<div class="upload-icon">
+    🪪
+</div>
 
-            <div class="file-details-icon">
-                📄
-            </div>
 
-            <div>
+<h4>
+    Upload NRIC Front
+</h4>
 
-                <div
-                    class="file-name"
-                    id="fileName"
-                >
-                    document.jpg
-                </div>
 
-                <div
-                    class="file-size"
-                    id="fileSize"
-                >
-                    0 KB
-                </div>
+<p>
+    Drag & drop or select the front image
+</p>
 
-            </div>
 
-        </div>
+<div class="choose-button">
+    Choose Front Image
+</div>
 
 
-        <button
-            type="button"
-            class="remove"
-            onclick="removeFile()"
-        >
-            ×
-        </button>
+<div class="file-type">
+    JPG, JPEG or PNG • Maximum 10 MB
+</div>
 
-    </div>
+</label>
 
 
 
-    <!-- PREVIEW -->
+<input
+    id="frontInput"
+    type="file"
+    accept="image/jpeg,image/png"
+>
 
-    <div
-        class="preview-container"
-        id="previewContainer"
-    >
 
-        <div class="preview-header">
 
-            <span>
-                DOCUMENT PREVIEW
-            </span>
+<div
+    class="file-info"
+    id="frontFileInfo"
+>
 
-            <span class="preview-ready">
-                ● READY
-            </span>
+<div class="file-left">
 
-        </div>
+<div class="file-document-icon">
+    📄
+</div>
 
 
-        <img
-            id="preview"
-            alt="MyKad preview"
-        >
+<div class="file-text">
 
-    </div>
+<div
+    class="file-name"
+    id="frontFileName"
+></div>
 
+<div
+    class="file-size"
+    id="frontFileSize"
+></div>
 
+</div>
 
-    <button
-        id="scanButton"
-        disabled
-    >
-        ✦ Extract Information
-    </button>
+</div>
 
 
+<button
+    type="button"
+    class="remove-button"
+    onclick="removeFront()"
+>
+    ×
+</button>
 
-    <!-- PROGRESS -->
+</div>
 
-    <div
-        class="progress-container"
-        id="progressContainer"
-    >
 
-        <div class="progress-text">
 
-            <span id="progressLabel">
-                Reading document...
-            </span>
+<div
+    class="preview-box"
+    id="frontPreviewBox"
+>
 
-            <span id="progressPercent">
-                0%
-            </span>
+<div class="preview-title">
 
-        </div>
+<span>
+    FRONT PREVIEW
+</span>
 
+<span class="preview-ready">
+    ● READY
+</span>
 
-        <div class="progress-track">
+</div>
 
-            <div id="progressBar">
-            </div>
 
-        </div>
+<img
+    id="frontPreview"
+    alt="NRIC Front Preview"
+>
 
-    </div>
-
-
-
-    <div class="privacy">
-
-        🛡️ Use synthetic or authorised test
-        documents. Do not upload NRIC images
-        to your GitHub repository.
-
-    </div>
-
-</section>
-
-
-
-<!-- ==============================
-     RESULTS
-================================ -->
-
-<section class="card">
-
-    <div class="card-title">
-
-        <h3>
-            Extracted Result
-        </h3>
-
-        <p>
-            Information detected from the
-            uploaded NRIC.
-        </p>
-
-    </div>
-
-
-    <div
-        class="result-status"
-        id="resultStatus"
-    >
-        ○ Waiting for document
-    </div>
-
-
-
-    <div class="results">
-
-
-        <div class="result full">
-
-            <label>
-                IC Number
-            </label>
-
-            <div
-                class="result-value null"
-                id="icNumber"
-            >
-                null
-            </div>
-
-        </div>
-
-
-
-        <div class="result full">
-
-            <label>
-                Full Name
-            </label>
-
-            <div
-                class="result-value null"
-                id="fullName"
-            >
-                null
-            </div>
-
-        </div>
-
-
-
-        <div class="result">
-
-            <label>
-                Date of Birth
-            </label>
-
-            <div
-                class="result-value null"
-                id="dob"
-            >
-                null
-            </div>
-
-        </div>
-
-
-
-        <div class="result">
-
-            <label>
-                Gender
-            </label>
-
-            <div
-                class="result-value null"
-                id="gender"
-            >
-                null
-            </div>
-
-        </div>
-
-
-
-        <div class="result full">
-
-            <label>
-                Address
-            </label>
-
-            <div
-                class="result-value null"
-                id="address"
-            >
-                null
-            </div>
-
-        </div>
-
-
-
-        <div class="result full">
-
-            <label>
-                Nationality / Citizenship
-            </label>
-
-            <div
-                class="result-value null"
-                id="nationality"
-            >
-                null
-            </div>
-
-        </div>
-
-
-    </div>
-
-</section>
+</div>
 
 
 </div>
 
 
 
-<!-- ==============================
-     JSON RESULT
-================================ -->
+<!-- ======================================================
+     BACK
+======================================================= -->
+
+<div class="upload-column">
+
+
+<div class="side-header">
+
+<strong>
+    NRIC Back
+</strong>
+
+<span class="badge optional">
+    OPTIONAL
+</span>
+
+</div>
+
+
+
+<label
+    class="upload-zone"
+    id="backZone"
+    for="backInput"
+>
+
+<div class="upload-icon">
+    🪪
+</div>
+
+
+<h4>
+    Upload NRIC Back
+</h4>
+
+
+<p>
+    Drag & drop or select the back image
+</p>
+
+
+<div class="choose-button">
+    Choose Back Image
+</div>
+
+
+<div class="file-type">
+    JPG, JPEG or PNG • Maximum 10 MB
+</div>
+
+</label>
+
+
+
+<input
+    id="backInput"
+    type="file"
+    accept="image/jpeg,image/png"
+>
+
+
+
+<div
+    class="file-info"
+    id="backFileInfo"
+>
+
+<div class="file-left">
+
+<div class="file-document-icon">
+    📄
+</div>
+
+
+<div class="file-text">
+
+<div
+    class="file-name"
+    id="backFileName"
+></div>
+
+<div
+    class="file-size"
+    id="backFileSize"
+></div>
+
+</div>
+
+</div>
+
+
+<button
+    type="button"
+    class="remove-button"
+    onclick="removeBack()"
+>
+    ×
+</button>
+
+</div>
+
+
+
+<div
+    class="preview-box"
+    id="backPreviewBox"
+>
+
+<div class="preview-title">
+
+<span>
+    BACK PREVIEW
+</span>
+
+<span class="preview-ready">
+    ● READY
+</span>
+
+</div>
+
+
+<img
+    id="backPreview"
+    alt="NRIC Back Preview"
+>
+
+</div>
+
+
+</div>
+
+
+</div>
+
+
+
+<!-- PROCESS BUTTON -->
+
+<button
+    id="extractButton"
+    disabled
+>
+    ✦ Extract NRIC Information
+</button>
+
+
+
+<!-- PROGRESS -->
+
+<div
+    class="progress-area"
+    id="progressArea"
+>
+
+
+<div class="progress-item">
+
+<div class="progress-label">
+
+<span>
+    Reading NRIC Front
+</span>
+
+<span id="frontPercent">
+    0%
+</span>
+
+</div>
+
+
+<div class="progress-track">
+
+<div
+    class="progress-bar"
+    id="frontProgress"
+></div>
+
+</div>
+
+</div>
+
+
+
+<div
+    class="progress-item"
+    id="backProgressItem"
+    style="display:none;"
+>
+
+<div class="progress-label">
+
+<span>
+    Reading NRIC Back
+</span>
+
+<span id="backPercent">
+    0%
+</span>
+
+</div>
+
+
+<div class="progress-track">
+
+<div
+    class="progress-bar"
+    id="backProgress"
+></div>
+
+</div>
+
+</div>
+
+
+</div>
+
+
+
+<div class="privacy">
+
+🛡️ Use synthetic or authorised documents only.
+Do not save NRIC images or extracted personal information
+inside your GitHub repository.
+
+</div>
+
+
+</section>
+
+
+
+<!-- ======================================================
+     EXTRACTED RESULT
+======================================================= -->
+
+<section class="card results-card">
+
+
+<div class="card-title">
+
+<h3>
+    <span class="step">2</span>
+    Extracted Result
+</h3>
+
+
+<p>
+    Information detected from the NRIC.
+    Fields that cannot be read reliably are returned as null.
+</p>
+
+</div>
+
+
+
+<div
+    class="status-box"
+    id="statusBox"
+>
+    ○ Waiting for NRIC
+</div>
+
+
+
+<div class="result-grid">
+
+
+<div class="result-field full">
+
+<label>
+    IC Number
+</label>
+
+<div
+    class="result-value null"
+    id="icNumber"
+>
+    null
+</div>
+
+</div>
+
+
+
+<div class="result-field full">
+
+<label>
+    Full Name
+</label>
+
+<div
+    class="result-value null"
+    id="fullName"
+>
+    null
+</div>
+
+</div>
+
+
+
+<div class="result-field">
+
+<label>
+    Date of Birth
+</label>
+
+<div
+    class="result-value null"
+    id="dob"
+>
+    null
+</div>
+
+</div>
+
+
+
+<div class="result-field">
+
+<label>
+    Gender
+</label>
+
+<div
+    class="result-value null"
+    id="gender"
+>
+    null
+</div>
+
+</div>
+
+
+
+<div class="result-field full">
+
+<label>
+    Address
+</label>
+
+<div
+    class="result-value null"
+    id="address"
+>
+    null
+</div>
+
+</div>
+
+
+
+<div class="result-field full">
+
+<label>
+    Nationality / Citizenship
+</label>
+
+<div
+    class="result-value null"
+    id="nationality"
+>
+    null
+</div>
+
+</div>
+
+
+</div>
+
+
+</section>
+
+
+
+<!-- ======================================================
+     JSON OUTPUT
+======================================================= -->
 
 <section class="card json-card">
 
-    <div class="json-header">
 
-        <h3>
-            Structured Result
-        </h3>
+<div class="json-header">
 
-        <button
-            class="copy"
-            onclick="copyResult()"
-        >
-            Copy JSON
-        </button>
-
-    </div>
+<h3>
+    <span class="step">3</span>
+    JSON Output
+</h3>
 
 
-    <textarea
-        id="jsonOutput"
-        readonly
-    >{
-  "IC_Number": null,
-  "Full_Name": null,
-  "Date_of_Birth": null,
-  "Gender": null,
-  "Address": null,
-  "Nationality": null
-}</textarea>
+<button
+    class="copy-button"
+    onclick="copyJSON()"
+>
+    Copy JSON
+</button>
+
+</div>
+
+
+
+<textarea
+    id="jsonOutput"
+    readonly
+></textarea>
+
 
 </section>
 
@@ -1699,87 +1988,49 @@ header {
 
 
 
+<footer>
+OCR Enablement • Malaysia NRIC Reader
+</footer>
+
+
+
 <script>
 
-/* ================================
+/* =========================================================
    ELEMENTS
-================================ */
+========================================================= */
 
-const fileInput =
-    document.getElementById(
-        "fileInput"
-    );
+const frontInput =
+    document.getElementById("frontInput");
 
-const uploadZone =
-    document.getElementById(
-        "uploadZone"
-    );
+const backInput =
+    document.getElementById("backInput");
 
-const fileBox =
-    document.getElementById(
-        "fileBox"
-    );
+const frontZone =
+    document.getElementById("frontZone");
 
-const fileName =
-    document.getElementById(
-        "fileName"
-    );
+const backZone =
+    document.getElementById("backZone");
 
-const fileSize =
-    document.getElementById(
-        "fileSize"
-    );
+const extractButton =
+    document.getElementById("extractButton");
 
-const previewContainer =
-    document.getElementById(
-        "previewContainer"
-    );
-
-const preview =
-    document.getElementById(
-        "preview"
-    );
-
-const scanButton =
-    document.getElementById(
-        "scanButton"
-    );
-
-const progressContainer =
-    document.getElementById(
-        "progressContainer"
-    );
-
-const progressBar =
-    document.getElementById(
-        "progressBar"
-    );
-
-const progressLabel =
-    document.getElementById(
-        "progressLabel"
-    );
-
-const progressPercent =
-    document.getElementById(
-        "progressPercent"
-    );
-
-const resultStatus =
-    document.getElementById(
-        "resultStatus"
-    );
+const statusBox =
+    document.getElementById("statusBox");
 
 const jsonOutput =
-    document.getElementById(
-        "jsonOutput"
-    );
+    document.getElementById("jsonOutput");
 
 
-let selectedFile = null;
+let frontFile = null;
+let backFile = null;
+
+let frontURL = null;
+let backURL = null;
 
 
-let resultData = {
+
+let extractedData = {
 
     IC_Number: null,
 
@@ -1796,98 +2047,22 @@ let resultData = {
 };
 
 
+updateJSON();
 
-/* ================================
-   FILE SELECT
-================================ */
 
-fileInput.addEventListener(
-    "change",
-    function() {
 
-        if (
-            this.files.length
-        ) {
+/* =========================================================
+   VALIDATE IMAGE
+========================================================= */
 
-            handleFile(
-                this.files[0]
-            );
+function validateImage(file) {
 
-        }
+    if (!file) {
+
+        return false;
 
     }
-);
 
-
-
-/* ================================
-   DRAG DROP
-================================ */
-
-uploadZone.addEventListener(
-    "dragover",
-    function(e) {
-
-        e.preventDefault();
-
-        uploadZone
-            .classList
-            .add(
-                "dragover"
-            );
-
-    }
-);
-
-
-uploadZone.addEventListener(
-    "dragleave",
-    function() {
-
-        uploadZone
-            .classList
-            .remove(
-                "dragover"
-            );
-
-    }
-);
-
-
-uploadZone.addEventListener(
-    "drop",
-    function(e) {
-
-        e.preventDefault();
-
-        uploadZone
-            .classList
-            .remove(
-                "dragover"
-            );
-
-
-        const file =
-            e.dataTransfer
-             .files[0];
-
-
-        if (file) {
-
-            handleFile(file);
-
-        }
-
-    }
-);
-
-
-
-/* ================================
-   HANDLE FILE
-================================ */
-
-function handleFile(file) {
 
     const types = [
 
@@ -1899,16 +2074,14 @@ function handleFile(file) {
 
 
     if (
-        !types.includes(
-            file.type
-        )
+        !types.includes(file.type)
     ) {
 
         alert(
             "Please upload JPG, JPEG or PNG."
         );
 
-        return;
+        return false;
 
     }
 
@@ -1922,85 +2095,335 @@ function handleFile(file) {
             "Maximum file size is 10 MB."
         );
 
+        return false;
+
+    }
+
+
+    return true;
+
+}
+
+
+
+/* =========================================================
+   FRONT FILE
+========================================================= */
+
+frontInput.addEventListener(
+    "change",
+    function() {
+
+        if (this.files.length) {
+
+            setFront(
+                this.files[0]
+            );
+
+        }
+
+    }
+);
+
+
+
+function setFront(file) {
+
+    if (
+        !validateImage(file)
+    ) {
+
         return;
 
     }
 
 
-    selectedFile =
-        file;
+    frontFile = file;
 
 
-    fileName.textContent =
+    document
+        .getElementById(
+            "frontFileName"
+        )
+        .textContent =
         file.name;
 
 
-    fileSize.textContent =
-        formatFileSize(
-            file.size
-        );
+    document
+        .getElementById(
+            "frontFileSize"
+        )
+        .textContent =
+        formatSize(file.size);
 
 
-    fileBox.style.display =
+    document
+        .getElementById(
+            "frontFileInfo"
+        )
+        .style.display =
         "flex";
 
 
-    preview.src =
-        URL.createObjectURL(
-            file
+    if (frontURL) {
+
+        URL.revokeObjectURL(
+            frontURL
         );
 
+    }
 
-    previewContainer.style.display =
+
+    frontURL =
+        URL.createObjectURL(file);
+
+
+    document
+        .getElementById(
+            "frontPreview"
+        )
+        .src =
+        frontURL;
+
+
+    document
+        .getElementById(
+            "frontPreviewBox"
+        )
+        .style.display =
         "block";
 
 
-    scanButton.disabled =
+    extractButton.disabled =
         false;
 
 
-    resultStatus.className =
-        "result-status";
+    statusBox.className =
+        "status-box";
 
 
-    resultStatus.textContent =
+    statusBox.textContent =
         "○ Ready to extract";
 
 }
 
 
 
-/* ================================
-   REMOVE
-================================ */
+/* =========================================================
+   BACK FILE
+========================================================= */
 
-function removeFile() {
+backInput.addEventListener(
+    "change",
+    function() {
 
-    selectedFile =
-        null;
+        if (this.files.length) {
+
+            setBack(
+                this.files[0]
+            );
+
+        }
+
+    }
+);
 
 
-    fileInput.value =
-        "";
+
+function setBack(file) {
+
+    if (
+        !validateImage(file)
+    ) {
+
+        return;
+
+    }
 
 
-    preview.src =
-        "";
+    backFile = file;
 
 
-    fileBox.style.display =
+    document
+        .getElementById(
+            "backFileName"
+        )
+        .textContent =
+        file.name;
+
+
+    document
+        .getElementById(
+            "backFileSize"
+        )
+        .textContent =
+        formatSize(file.size);
+
+
+    document
+        .getElementById(
+            "backFileInfo"
+        )
+        .style.display =
+        "flex";
+
+
+    if (backURL) {
+
+        URL.revokeObjectURL(
+            backURL
+        );
+
+    }
+
+
+    backURL =
+        URL.createObjectURL(file);
+
+
+    document
+        .getElementById(
+            "backPreview"
+        )
+        .src =
+        backURL;
+
+
+    document
+        .getElementById(
+            "backPreviewBox"
+        )
+        .style.display =
+        "block";
+
+}
+
+
+
+/* =========================================================
+   DRAG & DROP
+========================================================= */
+
+setupDrop(
+    frontZone,
+    setFront
+);
+
+
+setupDrop(
+    backZone,
+    setBack
+);
+
+
+
+function setupDrop(
+    zone,
+    callback
+) {
+
+    zone.addEventListener(
+        "dragover",
+        function(event) {
+
+            event.preventDefault();
+
+            zone
+                .classList
+                .add(
+                    "dragover"
+                );
+
+        }
+    );
+
+
+    zone.addEventListener(
+        "dragleave",
+        function() {
+
+            zone
+                .classList
+                .remove(
+                    "dragover"
+                );
+
+        }
+    );
+
+
+    zone.addEventListener(
+        "drop",
+        function(event) {
+
+            event.preventDefault();
+
+
+            zone
+                .classList
+                .remove(
+                    "dragover"
+                );
+
+
+            const file =
+                event
+                .dataTransfer
+                .files[0];
+
+
+            if (file) {
+
+                callback(file);
+
+            }
+
+        }
+    );
+
+}
+
+
+
+/* =========================================================
+   REMOVE FILE
+========================================================= */
+
+function removeFront() {
+
+    frontFile = null;
+
+    frontInput.value = "";
+
+
+    if (frontURL) {
+
+        URL.revokeObjectURL(
+            frontURL
+        );
+
+        frontURL = null;
+
+    }
+
+
+    document
+        .getElementById(
+            "frontFileInfo"
+        )
+        .style.display =
         "none";
 
 
-    previewContainer.style.display =
+    document
+        .getElementById(
+            "frontPreviewBox"
+        )
+        .style.display =
         "none";
 
 
-    progressContainer.style.display =
-        "none";
-
-
-    scanButton.disabled =
+    extractButton.disabled =
         true;
 
 
@@ -2010,23 +2433,60 @@ function removeFile() {
 
 
 
-/* ================================
-   SIZE
-================================ */
+function removeBack() {
 
-function formatFileSize(
-    bytes
-) {
+    backFile = null;
 
-    if (
-        bytes <
-        1024
-    ) {
+    backInput.value = "";
 
-        return (
-            bytes +
-            " B"
+
+    if (backURL) {
+
+        URL.revokeObjectURL(
+            backURL
         );
+
+        backURL = null;
+
+    }
+
+
+    document
+        .getElementById(
+            "backFileInfo"
+        )
+        .style.display =
+        "none";
+
+
+    document
+        .getElementById(
+            "backPreviewBox"
+        )
+        .style.display =
+        "none";
+
+
+    document
+        .getElementById(
+            "backProgressItem"
+        )
+        .style.display =
+        "none";
+
+}
+
+
+
+/* =========================================================
+   FILE SIZE
+========================================================= */
+
+function formatSize(bytes) {
+
+    if (bytes < 1024) {
+
+        return bytes + " B";
 
     }
 
@@ -2054,47 +2514,79 @@ function formatFileSize(
 
 
 
-/* ================================
-   PROCESS
-================================ */
+/* =========================================================
+   START EXTRACTION
+========================================================= */
 
-scanButton.addEventListener(
+extractButton.addEventListener(
     "click",
     async function() {
 
-        if (
-            !selectedFile
-        ) {
+        if (!frontFile) {
+
+            alert(
+                "Please upload the NRIC front image."
+            );
 
             return;
 
         }
 
 
-        scanButton.disabled =
+        extractButton.disabled =
             true;
 
 
-        progressContainer.style.display =
+        extractButton.textContent =
+            "Reading NRIC...";
+
+
+        const progressArea =
+            document.getElementById(
+                "progressArea"
+            );
+
+
+        progressArea.style.display =
             "block";
 
 
-        resultStatus.className =
-            "result-status";
+        document
+            .getElementById(
+                "frontProgress"
+            )
+            .style.width =
+            "0%";
 
 
-        resultStatus.textContent =
-            "○ Reading document...";
+        document
+            .getElementById(
+                "frontPercent"
+            )
+            .textContent =
+            "0%";
+
+
+        statusBox.className =
+            "status-box";
+
+
+        statusBox.textContent =
+            "○ Reading NRIC front...";
 
 
         try {
 
 
-            const result =
-                await Tesseract
-                .recognize(
+            /* =============================================
+               FRONT
+            ============================================= */
 
-                    selectedFile,
+
+            const frontResult =
+                await Tesseract.recognize(
+
+                    frontFile,
 
                     "eng",
 
@@ -2110,27 +2602,27 @@ scanButton.addEventListener(
                                 "number"
                             ) {
 
-                                const p =
+                                const percent =
                                     Math.round(
                                         message.progress *
                                         100
                                     );
 
 
-                                progressBar
-                                    .style
-                                    .width =
-                                    p + "%";
+                                document
+                                    .getElementById(
+                                        "frontProgress"
+                                    )
+                                    .style.width =
+                                    percent + "%";
 
 
-                                progressPercent
+                                document
+                                    .getElementById(
+                                        "frontPercent"
+                                    )
                                     .textContent =
-                                    p + "%";
-
-
-                                progressLabel
-                                    .textContent =
-                                    "Reading document...";
+                                    percent + "%";
 
                             }
 
@@ -2141,29 +2633,193 @@ scanButton.addEventListener(
                 );
 
 
-            processText(
-                result.data.text ||
-                ""
+            const frontText =
+                frontResult.data.text ||
+                "";
+
+
+
+            /* =============================================
+               BACK
+            ============================================= */
+
+
+            if (backFile) {
+
+
+                document
+                    .getElementById(
+                        "backProgressItem"
+                    )
+                    .style.display =
+                    "block";
+
+
+                statusBox.textContent =
+                    "○ Reading NRIC back...";
+
+
+                await Tesseract.recognize(
+
+                    backFile,
+
+                    "eng",
+
+                    {
+
+                        logger:
+                        message => {
+
+                            if (
+                                typeof
+                                message.progress
+                                ===
+                                "number"
+                            ) {
+
+                                const percent =
+                                    Math.round(
+                                        message.progress *
+                                        100
+                                    );
+
+
+                                document
+                                    .getElementById(
+                                        "backProgress"
+                                    )
+                                    .style.width =
+                                    percent + "%";
+
+
+                                document
+                                    .getElementById(
+                                        "backPercent"
+                                    )
+                                    .textContent =
+                                    percent + "%";
+
+                            }
+
+                        }
+
+                    }
+
+                );
+
+            }
+
+
+
+            /* =============================================
+               EXTRACT FRONT INFORMATION
+            ============================================= */
+
+
+            const ic =
+                extractIC(
+                    frontText
+                );
+
+
+            const name =
+                extractName(
+                    frontText
+                );
+
+
+            const gender =
+                extractGender(
+                    frontText
+                );
+
+
+            const nationality =
+                extractNationality(
+                    frontText
+                );
+
+
+            const address =
+                extractAddress(
+                    frontText
+                );
+
+
+            const dob =
+                ic
+                ? deriveDOB(ic)
+                : null;
+
+
+
+            extractedData = {
+
+                IC_Number:
+                    ic,
+
+                Full_Name:
+                    name,
+
+                Date_of_Birth:
+                    dob,
+
+                Gender:
+                    gender,
+
+                Address:
+                    address,
+
+                Nationality:
+                    nationality
+
+            };
+
+
+            displayResult(
+                "icNumber",
+                ic
             );
 
 
-            progressBar.style.width =
-                "100%";
+            displayResult(
+                "fullName",
+                name
+            );
 
 
-            progressPercent.textContent =
-                "100%";
+            displayResult(
+                "dob",
+                dob
+            );
 
 
-            progressLabel.textContent =
-                "Completed";
+            displayResult(
+                "gender",
+                gender
+            );
 
 
-            resultStatus.className =
-                "result-status completed";
+            displayResult(
+                "address",
+                address
+            );
 
 
-            resultStatus.textContent =
+            displayResult(
+                "nationality",
+                nationality
+            );
+
+
+            updateJSON();
+
+
+            statusBox.className =
+                "status-box completed";
+
+
+            statusBox.textContent =
                 "● Extraction completed";
 
 
@@ -2172,26 +2828,28 @@ scanButton.addEventListener(
         catch(error) {
 
 
-            console.error(
-                error
-            );
+            console.error(error);
 
 
-            resultStatus.className =
-                "result-status";
+            statusBox.className =
+                "status-box";
 
 
-            resultStatus.textContent =
+            statusBox.textContent =
                 "Extraction failed";
 
 
         }
 
-
         finally {
 
-            scanButton.disabled =
+
+            extractButton.disabled =
                 false;
+
+
+            extractButton.textContent =
+                "✦ Extract NRIC Information";
 
         }
 
@@ -2200,132 +2858,9 @@ scanButton.addEventListener(
 
 
 
-/* ================================
-   EXTRACT DATA
-================================ */
-
-function processText(text) {
-
-    const clean =
-        text.replace(
-            /\r/g,
-            ""
-        );
-
-
-    const upper =
-        clean.toUpperCase();
-
-
-    const ic =
-        extractIC(
-            clean
-        );
-
-
-    const dob =
-        ic
-        ? deriveDOB(ic)
-        : null;
-
-
-    const gender =
-        extractGender(
-            upper
-        );
-
-
-    const nationality =
-        extractNationality(
-            upper
-        );
-
-
-    const name =
-        extractName(
-            clean
-        );
-
-
-    const address =
-        extractAddress(
-            clean
-        );
-
-
-    resultData = {
-
-        IC_Number:
-            ic,
-
-        Full_Name:
-            name,
-
-        Date_of_Birth:
-            dob,
-
-        Gender:
-            gender,
-
-        Address:
-            address,
-
-        Nationality:
-            nationality
-
-    };
-
-
-    displayResult(
-        "icNumber",
-        ic
-    );
-
-
-    displayResult(
-        "fullName",
-        name
-    );
-
-
-    displayResult(
-        "dob",
-        dob
-    );
-
-
-    displayResult(
-        "gender",
-        gender
-    );
-
-
-    displayResult(
-        "address",
-        address
-    );
-
-
-    displayResult(
-        "nationality",
-        nationality
-    );
-
-
-    jsonOutput.value =
-        JSON.stringify(
-            resultData,
-            null,
-            2
-        );
-
-}
-
-
-
-/* ================================
-   IC
-================================ */
+/* =========================================================
+   IC NUMBER
+========================================================= */
 
 function extractIC(text) {
 
@@ -2333,7 +2868,7 @@ function extractIC(text) {
 
         /\b\d{6}-\d{2}-\d{4}\b/,
 
-        /\b\d{6}\s\d{2}\s\d{4}\b/,
+        /\b\d{6}\s+\d{2}\s+\d{4}\b/,
 
         /\b\d{12}\b/
 
@@ -2346,14 +2881,12 @@ function extractIC(text) {
     ) {
 
         const match =
-            text.match(
-                pattern
-            );
+            text.match(pattern);
 
 
         if (match) {
 
-            const value =
+            const digits =
                 match[0]
                 .replace(
                     /\D/g,
@@ -2362,11 +2895,11 @@ function extractIC(text) {
 
 
             if (
-                value.length ===
+                digits.length ===
                 12
             ) {
 
-                return value;
+                return digits;
 
             }
 
@@ -2381,9 +2914,331 @@ function extractIC(text) {
 
 
 
-/* ================================
+/* =========================================================
+   NAME
+========================================================= */
+
+function extractName(text) {
+
+    const lines =
+        text
+        .split("\n")
+        .map(
+            line =>
+            line
+            .replace(
+                /[|_[\]{}]/g,
+                ""
+            )
+            .replace(
+                /\s+/g,
+                " "
+            )
+            .trim()
+        )
+        .filter(Boolean);
+
+
+    const blocked = [
+
+        "MALAYSIA",
+        "KAD PENGENALAN",
+        "IDENTITY CARD",
+        "WARGANEGARA",
+        "CITIZEN",
+        "LELAKI",
+        "PEREMPUAN",
+        "MALE",
+        "FEMALE",
+        "ALAMAT",
+        "ADDRESS"
+
+    ];
+
+
+    const addressWords = [
+
+        "JALAN",
+        "JLN",
+        "LORONG",
+        "TAMAN",
+        "KAMPUNG",
+        "BANDAR",
+        "PERSIARAN",
+        "APARTMENT",
+        "PANGSAPURI",
+        "DESA",
+        "SEKSYEN",
+        "SELANGOR",
+        "JOHOR",
+        "MELAKA",
+        "PAHANG",
+        "PERAK",
+        "PERLIS",
+        "KEDAH",
+        "KELANTAN",
+        "TERENGGANU",
+        "SABAH",
+        "SARAWAK",
+        "PUTRAJAYA",
+        "LABUAN"
+
+    ];
+
+
+    const candidates = [];
+
+
+    for (
+        let index = 0;
+        index < lines.length;
+        index++
+    ) {
+
+        const line =
+            lines[index];
+
+
+        const upper =
+            line.toUpperCase();
+
+
+        if (
+            upper.length < 4
+        ) {
+
+            continue;
+
+        }
+
+
+        if (
+            /\d{6}[-\s]?\d{2}[-\s]?\d{4}/
+            .test(line)
+        ) {
+
+            continue;
+
+        }
+
+
+        const digits =
+            (
+                line.match(/\d/g) ||
+                []
+            ).length;
+
+
+        if (
+            digits > 1
+        ) {
+
+            continue;
+
+        }
+
+
+        if (
+            blocked.some(
+                word =>
+                upper.includes(
+                    word
+                )
+            )
+        ) {
+
+            continue;
+
+        }
+
+
+        if (
+            addressWords.some(
+                word =>
+                new RegExp(
+                    "\\b" +
+                    word +
+                    "\\b",
+                    "i"
+                )
+                .test(upper)
+            )
+        ) {
+
+            continue;
+
+        }
+
+
+        if (
+            !/^[A-Z @'.\/-]+$/i
+            .test(line)
+        ) {
+
+            continue;
+
+        }
+
+
+        const words =
+            upper
+            .split(/\s+/)
+            .filter(Boolean);
+
+
+        if (
+            words.length < 2
+        ) {
+
+            continue;
+
+        }
+
+
+        let score = 0;
+
+
+        if (
+            words.length >= 2 &&
+            words.length <= 8
+        ) {
+
+            score += 3;
+
+        }
+
+
+        if (
+            upper.length >= 7 &&
+            upper.length <= 60
+        ) {
+
+            score += 2;
+
+        }
+
+
+        if (
+            /\b(BIN|BINTI|BT|ANAK)\b/i
+            .test(upper)
+
+            ||
+
+            /\bA\/L\b/i
+            .test(upper)
+
+            ||
+
+            /\bA\/P\b/i
+            .test(upper)
+        ) {
+
+            score += 4;
+
+        }
+
+
+        if (
+            index <
+            Math.ceil(
+                lines.length *
+                .55
+            )
+        ) {
+
+            score += 2;
+
+        }
+
+
+        const letters =
+            (
+                upper.match(/[A-Z]/g) ||
+                []
+            ).length;
+
+
+        if (
+            letters /
+            upper.length >
+            .7
+        ) {
+
+            score += 2;
+
+        }
+
+
+        candidates.push({
+
+            name:
+                upper,
+
+            score:
+                score,
+
+            index:
+                index
+
+        });
+
+    }
+
+
+    if (
+        candidates.length ===
+        0
+    ) {
+
+        return null;
+
+    }
+
+
+    candidates.sort(
+        function(a,b) {
+
+            if (
+                b.score !==
+                a.score
+            ) {
+
+                return (
+                    b.score -
+                    a.score
+                );
+
+            }
+
+
+            return (
+                a.index -
+                b.index
+            );
+
+        }
+    );
+
+
+    if (
+        candidates[0].score <
+        6
+    ) {
+
+        return null;
+
+    }
+
+
+    return candidates[0].name;
+
+}
+
+
+
+/* =========================================================
    DOB
-================================ */
+========================================================= */
 
 function deriveDOB(ic) {
 
@@ -2399,28 +3254,19 @@ function deriveDOB(ic) {
 
     const yy =
         Number(
-            ic.slice(
-                0,
-                2
-            )
+            ic.slice(0,2)
         );
 
 
     const mm =
         Number(
-            ic.slice(
-                2,
-                4
-            )
+            ic.slice(2,4)
         );
 
 
     const dd =
         Number(
-            ic.slice(
-                4,
-                6
-            )
+            ic.slice(4,6)
         );
 
 
@@ -2462,10 +3308,14 @@ function deriveDOB(ic) {
 
     if (
         date.getFullYear()
-            !== year ||
+            !== year
+
+        ||
 
         date.getMonth()
-            !== mm - 1 ||
+            !== mm - 1
+
+        ||
 
         date.getDate()
             !== dd
@@ -2496,20 +3346,24 @@ function deriveDOB(ic) {
 
 
 
-/* ================================
+/* =========================================================
    GENDER
-================================ */
+========================================================= */
 
-function extractGender(
-    text
-) {
+function extractGender(text) {
+
+    const upper =
+        text.toUpperCase();
+
 
     if (
         /\bLELAKI\b/
-        .test(text) ||
+        .test(upper)
+
+        ||
 
         /\bMALE\b/
-        .test(text)
+        .test(upper)
     ) {
 
         return "MALE";
@@ -2519,10 +3373,12 @@ function extractGender(
 
     if (
         /\bPEREMPUAN\b/
-        .test(text) ||
+        .test(upper)
+
+        ||
 
         /\bFEMALE\b/
-        .test(text)
+        .test(upper)
     ) {
 
         return "FEMALE";
@@ -2536,17 +3392,19 @@ function extractGender(
 
 
 
-/* ================================
+/* =========================================================
    NATIONALITY
-================================ */
+========================================================= */
 
-function extractNationality(
-    text
-) {
+function extractNationality(text) {
+
+    const upper =
+        text.toUpperCase();
+
 
     if (
         /\bWARGANEGARA\b/
-        .test(text)
+        .test(upper)
     ) {
 
         return "WARGANEGARA";
@@ -2556,7 +3414,7 @@ function extractNationality(
 
     if (
         /\bCITIZEN\b/
-        .test(text)
+        .test(upper)
     ) {
 
         return "CITIZEN";
@@ -2570,138 +3428,32 @@ function extractNationality(
 
 
 
-/* ================================
-   NAME
-================================ */
-
-function extractName(
-    text
-) {
-
-    const lines =
-        text
-        .split("\n")
-        .map(
-            line =>
-            line.trim()
-        )
-        .filter(
-            Boolean
-        );
-
-
-    const ignore = [
-
-        "MALAYSIA",
-
-        "KAD PENGENALAN",
-
-        "IDENTITY CARD",
-
-        "WARGANEGARA",
-
-        "CITIZEN",
-
-        "LELAKI",
-
-        "PEREMPUAN",
-
-        "MALE",
-
-        "FEMALE"
-
-    ];
-
-
-    for (
-        const line
-        of lines
-    ) {
-
-        const upper =
-            line.toUpperCase();
-
-
-        if (
-            ignore.includes(
-                upper
-            )
-        ) {
-
-            continue;
-
-        }
-
-
-        if (
-            /\d{6}[-\s]?\d{2}[-\s]?\d{4}/
-            .test(line)
-        ) {
-
-            continue;
-
-        }
-
-
-        if (
-            /^[A-Z @'.\/-]{4,}$/i
-            .test(line)
-        ) {
-
-            const words =
-                line
-                .trim()
-                .split(
-                    /\s+/
-                );
-
-
-            if (
-                words.length >=
-                2
-            ) {
-
-                return upper;
-
-            }
-
-        }
-
-    }
-
-
-    return null;
-
-}
-
-
-
-/* ================================
+/* =========================================================
    ADDRESS
-================================ */
+========================================================= */
 
-function extractAddress(
-    text
-) {
+function extractAddress(text) {
 
     const lines =
         text
         .split("\n")
         .map(
             line =>
-            line.trim()
+            line
+            .replace(
+                /\s+/g,
+                " "
+            )
+            .trim()
         )
-        .filter(
-            Boolean
-        );
+        .filter(Boolean);
 
 
-    const indicator =
+    const startPattern =
         /\b(NO\.?|JALAN|JLN|LORONG|TAMAN|KAMPUNG|KG\.?|BANDAR|PERSIARAN|APARTMENT|PANGSAPURI|DESA|SEKSYEN)\b/i;
 
 
-    const addressLines =
-        [];
+    const result = [];
 
 
     for (
@@ -2711,26 +3463,23 @@ function extractAddress(
     ) {
 
         if (
-            indicator.test(
+            startPattern.test(
                 lines[i]
             )
         ) {
 
-            addressLines.push(
+            result.push(
                 lines[i]
             );
 
 
             for (
-                let j =
-                    i + 1;
-
+                let j = i + 1;
                 j <
                 Math.min(
                     i + 4,
                     lines.length
                 );
-
                 j++
             ) {
 
@@ -2748,7 +3497,17 @@ function extractAddress(
                 }
 
 
-                addressLines.push(
+                if (
+                    /\d{6}[-\s]?\d{2}[-\s]?\d{4}/
+                    .test(next)
+                ) {
+
+                    continue;
+
+                }
+
+
+                result.push(
                     next
                 );
 
@@ -2763,7 +3522,7 @@ function extractAddress(
 
 
     if (
-        addressLines.length ===
+        result.length ===
         0
     ) {
 
@@ -2772,7 +3531,7 @@ function extractAddress(
     }
 
 
-    return addressLines
+    return result
         .join(", ")
         .toUpperCase();
 
@@ -2780,9 +3539,9 @@ function extractAddress(
 
 
 
-/* ================================
-   DISPLAY
-================================ */
+/* =========================================================
+   DISPLAY RESULT
+========================================================= */
 
 function displayResult(
     id,
@@ -2824,13 +3583,30 @@ function displayResult(
 
 
 
-/* ================================
+/* =========================================================
+   JSON
+========================================================= */
+
+function updateJSON() {
+
+    jsonOutput.value =
+        JSON.stringify(
+            extractedData,
+            null,
+            2
+        );
+
+}
+
+
+
+/* =========================================================
    RESET
-================================ */
+========================================================= */
 
 function resetResults() {
 
-    resultData = {
+    extractedData = {
 
         IC_Number: null,
 
@@ -2848,19 +3624,12 @@ function resetResults() {
 
 
     [
-
         "icNumber",
-
         "fullName",
-
         "dob",
-
         "gender",
-
         "address",
-
         "nationality"
-
     ]
     .forEach(
         id =>
@@ -2871,50 +3640,45 @@ function resetResults() {
     );
 
 
-    jsonOutput.value =
-        JSON.stringify(
-            resultData,
-            null,
-            2
-        );
+    document
+        .getElementById(
+            "progressArea"
+        )
+        .style.display =
+        "none";
 
 
-    resultStatus.className =
-        "result-status";
+    statusBox.className =
+        "status-box";
 
 
-    resultStatus.textContent =
-        "○ Waiting for document";
+    statusBox.textContent =
+        "○ Waiting for NRIC";
 
 
-    progressBar.style.width =
-        "0%";
-
-
-    progressPercent.textContent =
-        "0%";
+    updateJSON();
 
 }
 
 
 
-/* ================================
-   COPY
-================================ */
+/* =========================================================
+   COPY JSON
+========================================================= */
 
-async function copyResult() {
+async function copyJSON() {
 
     try {
 
         await navigator
-        .clipboard
-        .writeText(
-            jsonOutput.value
-        );
+            .clipboard
+            .writeText(
+                jsonOutput.value
+            );
 
 
         alert(
-            "JSON result copied."
+            "JSON output copied."
         );
 
     }
@@ -2922,7 +3686,7 @@ async function copyResult() {
     catch(error) {
 
         alert(
-            "Unable to copy result."
+            "Unable to copy JSON."
         );
 
     }
@@ -2930,7 +3694,6 @@ async function copyResult() {
 }
 
 </script>
-
 
 </body>
 </html>
