@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>OCR Enablement - Malaysia MyKad Reader</title>
+
+  <!-- Browser OCR Engine -->
+  <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: Arial, sans-serif;
+      background: #f5f7fb;
+      color: #172033;
+      min-height: 100vh;
+    }
+
+    header {
+      background: #ffffff;
+      border-bottom: 1px solid #e6e9ef;
+      padding: 20px 7%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .brand h2 {
+      font-size: 22px;
+    }
+
+    .brand p {
+      color: #6b7280;
+      font-size: 13px;
+      margin-top: 4px;
+    }
+
+    .badge {
+      background: #e8f7ee;
+      color: #168344;
+      padding: 8px 14px;
+      border-radius: 30px;
+      font-size: 13px;
+      font-weight: bold;
+    }
+
+    .container {
+      width: 90%;
+      max-width: 1200px;
+      margin: 35px auto;
+    }
+
+    .hero {
+      margin-bottom: 25px;
+    }
+
+    .hero h1 {
+      font-size: 32px;
+      margin-bottom: 10px;
+    }
+
+    .hero p {
+      color: #667085;
+      line-height: 1.6;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 25px;
+    }
+
+    .card {
+      background: white;
+      border-radius: 16px;
+      padding: 25px;
+      border: 1px solid #e7eaf0;
+      box-shadow: 0 8px 25px rgba(0,0,0,0.04);
+    }
+
+    .card h3 {
+      margin-bottom: 18px;
+    }
+
+    .upload-box {
+      border: 2px dashed #b8c0cc;
+      border-radius: 14px;
+      padding: 35px;
+      text-align: center;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+
+    .upload-box:hover {
+      border-color: #2563eb;
+      background: #f8faff;
+    }
+
+    .upload-icon {
+      font-size: 40px;
+      margin-bottom: 10px;
+    }
+
+    input[type="file"] {
+      display: none;
+    }
+
+    #preview {
+      width: 100%;
+      max-height: 300px;
+      object-fit: contain;
+      margin-top: 20px;
+      border-radius: 10px;
+      display: none;
+      background: #f3f4f6;
+    }
+
+    button {
+      width: 100%;
+      margin-top: 18px;
+      padding: 14px;
+      border: none;
+      border-radius: 10px;
+      background: #2563eb;
+      color: white;
+      font-size: 15px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background: #1d4ed8;
+    }
+
+    button:disabled {
+      background: #9ca3af;
+      cursor: not-allowed;
+    }
+
+    .progress-container {
+      margin-top: 20px;
+      display: none;
+    }
+
+    .progress-bar {
+      width: 100%;
+      height: 10px;
+      background: #e5e7eb;
+      border-radius: 10px;
+      overflow: hidden;
+    }
+
+    .progress {
+      width: 0%;
+      height: 100%;
+      background: #2563eb;
+      transition: width 0.3s;
+    }
+
+    #status {
+      margin-top: 8px;
+      color: #667085;
+      font-size: 13px;
+    }
+
+    .field {
+      margin-bottom: 16px;
+    }
+
+    .field label {
+      display: block;
+      color: #667085;
+      font-size: 12px;
+      margin-bottom: 5px;
+      text-transform: uppercase;
+      font-weight: bold;
+    }
+
+    .field-value {
+      background: #f8fafc;
+      border: 1px solid #e5e7eb;
+      border-radius: 8px;
+      padding: 12px;
+      min-height: 42px;
+      word-break: break-word;
+    }
+
+    .success {
+      color: #15803d;
+      font-weight: bold;
+    }
+
+    textarea {
+      width: 100%;
+      height: 220px;
+      padding: 14px;
+      border: 1px solid #e5e7eb;
+      border-radius: 10px;
+      resize: vertical;
+      font-family: monospace;
+      line-height: 1.5;
+    }
+
+    .full-width {
+      grid-column: 1 / -1;
+    }
+
+    .kpi {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 15px;
+      margin-bottom: 25px;
+    }
+
+    .kpi-box {
+      background: white;
+      border: 1px solid #e7eaf0;
+      padding: 18px;
+      border-radius: 12px;
+    }
+
+    .kpi-box strong {
+      display: block;
+      font-size: 22px;
+      margin-top: 5px;
+    }
+
+    .kpi-box span {
+      color: #667085;
+      font-size: 13px;
+    }
+
+    @media(max-width: 800px) {
+      .grid,
+      .kpi {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+<header>
+  <div class="brand">
+    <h2>OCR Enablement</h2>
+    <p>AI-Powered Document Information Extraction</p>
+  </div>
+
+  <div class="badge">MyKad Workflow</div>
+</header>
+
+<div class="container">
+
+  <section class="hero">
+    <h1>Malaysia MyKad OCR Reader</h1>
+    <p>
+      Upload a Malaysian IC/MyKad image to demonstrate an OCR workflow
+      that converts document images into machine-readable information.
+    </p>
+  </section>
+
+  <div class="kpi">
+    <div class="kpi-box">
+      <span>OCR Workflow</span>
+      <strong>MyKad</strong>
+    </div>
+
+    <div class="kpi-box">
+      <span>Target Accuracy</span>
+      <strong>≥90%</strong>
+    </div>
+
+    <div class="kpi-box">
+      <span>Processing</span>
+      <strong>Browser OCR</strong>
+    </div>
+  </div>
+
+  <div class="grid">
+
+    <!-- Upload -->
+    <div class="card">
+      <h3>1. Upload IC</h3>
+
+      <label class="upload-box" for="fileInput">
+        <div class="upload-icon">📄</div>
+        <strong>Upload MyKad Image</strong>
+        <p style="margin-top:8px;color:#667085;font-size:13px;">
+          JPG, JPEG or PNG
+        </p>
+      </label>
+
+      <input
+        type="file"
+        id="fileInput"
+        accept="image/png,image/jpeg"
+      />
+
+      <img id="preview" alt="Document Preview" />
+
+      <button id="scanBtn" disabled>
+        Scan & Extract Information
+      </button>
+
+      <div class="progress-container" id="progressContainer">
+        <div class="progress-bar">
+          <div class="progress" id="progress"></div>
+        </div>
+        <div id="status">Waiting...</div>
+      </div>
+    </div>
+
+    <!-- Structured Results -->
+    <div class="card">
+      <h3>2. Extracted Information</h3>
+
+      <div class="field">
+        <label>Document Type</label>
+        <div class="field-value" id="documentType">
+          Not processed
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Identity Number / NRIC</label>
+        <div class="field-value" id="nric">
+          -
+        </div>
+      </div>
+
+      <div class="field">
+        <label>OCR Confidence</label>
+        <div class="field-value" id="confidence">
+          -
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Workflow Status</label>
+        <div class="field-value" id="workflowStatus">
+          Waiting for document
+        </div>
+      </div>
+    </div>
+
+    <!-- Raw OCR -->
+    <div class="card full-width">
+      <h3>3. OCR Full Transcription</h3>
+
+      <textarea
+        id="ocrText"
+        readonly
+        placeholder="OCR result will appear here..."
+      ></textarea>
+    </div>
+
+  </div>
+</div>
+
+<script>
+  const fileInput = document.getElementById("fileInput");
+  const preview = document.getElementById("preview");
+  const scanBtn = document.getElementById("scanBtn");
+
+  const progressContainer =
+    document.getElementById("progressContainer");
+
+  const progress =
+    document.getElementById("progress");
+
+  const status =
+    document.getElementById("status");
+
+  let selectedFile = null;
+
+  fileInput.addEventListener("change", function(event) {
+
+    selectedFile = event.target.files[0];
+
+    if (!selectedFile) return;
+
+    if (!selectedFile.type.startsWith("image/")) {
+      alert("Please upload an image file.");
+      return;
+    }
+
+    const imageURL = URL.createObjectURL(selectedFile);
+
+    preview.src = imageURL;
+    preview.style.display = "block";
+
+    scanBtn.disabled = false;
+
+    document.getElementById("workflowStatus").innerText =
+      "Ready to process";
+  });
+
+
+  scanBtn.addEventListener("click", async function() {
+
+    if (!selectedFile) return;
+
+    scanBtn.disabled = true;
+
+    progressContainer.style.display = "block";
+
+    document.getElementById("workflowStatus").innerText =
+      "Processing OCR...";
+
+    document.getElementById("ocrText").value = "";
+
+    try {
+
+      const result = await Tesseract.recognize(
+        selectedFile,
+        "eng",
+        {
+          logger: message => {
+
+            if (message.status) {
+              status.innerText = message.status;
+            }
+
+            if (message.progress) {
+
+              const percentage =
+                Math.round(message.progress * 100);
+
+              progress.style.width =
+                percentage + "%";
+
+              status.innerText =
+                message.status +
+                " - " +
+                percentage +
+                "%";
+            }
+          }
+        }
+      );
+
+      const text = result.data.text;
+
+      const confidence =
+        result.data.confidence;
+
+      document.getElementById("ocrText").value =
+        text;
+
+      /*
+       Malaysia NRIC formats:
+
+       900101-14-1234
+       900101141234
+      */
+
+      const nricRegex =
+        /\b\d{6}-?\d{2}-?\d{4}\b/;
+
+      const nricMatch =
+        text.match(nricRegex);
+
+      if (nricMatch) {
+
+        document.getElementById("nric").innerHTML =
+          '<span class="success">' +
+          nricMatch[0] +
+          "</span>";
+
+      } else {
+
+        document.getElementById("nric").innerText =
+          "Not detected";
+      }
+
+      /*
+       Basic MyKad detection
+      */
+
+      const upperText =
+        text.toUpperCase();
+
+      if (
+        upperText.includes("MALAYSIA") ||
+        upperText.includes("KAD PENGENALAN") ||
+        nricMatch
+      ) {
+
+        document.getElementById("documentType").innerText =
+          "Malaysia MyKad";
+
+      } else {
+
+        document.getElementById("documentType").innerText =
+          "Unknown Document";
+      }
+
+      document.getElementById("confidence").innerText =
+        confidence.toFixed(2) + "%";
+
+      document.getElementById("workflowStatus").innerHTML =
+        '<span class="success">OCR Completed</span>';
+
+      progress.style.width = "100%";
+
+      status.innerText =
+        "Processing completed";
+
+    }
+
+    catch(error) {
+
+      console.error(error);
+
+      status.innerText =
+        "OCR processing failed.";
+
+      document.getElementById("workflowStatus").innerText =
+        "Failed";
+
+    }
+
+    finally {
+
+      scanBtn.disabled = false;
+
+    }
+
+  });
+</script>
+
+</body>
+</html>
