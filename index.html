@@ -1,1687 +1,2936 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <title>OCR Enablement | Malaysia MyKad</title>
+<title>OCR Enablement | Malaysia NRIC</title>
 
-  <!-- Tesseract.js OCR -->
-  <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
+<!-- OCR library runs in background only -->
+<script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
 
-  <style>
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
+<style>
 
-    body {
-      font-family: Inter, Arial, sans-serif;
-      background: #f4f7fb;
-      color: #182230;
-      min-height: 100vh;
-    }
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
 
-    header {
-      background: #ffffff;
-      border-bottom: 1px solid #e5e7eb;
-      padding: 18px 6%;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      position: sticky;
-      top: 0;
-      z-index: 10;
-    }
+:root {
+    --primary: #2563eb;
+    --primary-dark: #1d4ed8;
+    --text: #101828;
+    --muted: #667085;
+    --border: #e4e7ec;
+    --success: #067647;
+    --success-bg: #ecfdf3;
+    --danger: #d92d20;
+}
 
-    .logo h2 {
-      font-size: 21px;
-    }
+body {
+    min-height: 100vh;
 
-    .logo p {
-      color: #667085;
-      font-size: 12px;
-      margin-top: 4px;
-    }
+    font-family:
+        Inter,
+        Arial,
+        Helvetica,
+        sans-serif;
 
-    .status-badge {
-      background: #eaf8ef;
-      color: #16794b;
-      border-radius: 30px;
-      padding: 8px 14px;
-      font-size: 12px;
-      font-weight: 700;
-    }
+    color: var(--text);
 
-    .container {
-      width: 92%;
-      max-width: 1350px;
-      margin: 35px auto 60px;
-    }
+    background:
+        radial-gradient(
+            circle at 8% 10%,
+            rgba(37,99,235,.14),
+            transparent 27%
+        ),
+        radial-gradient(
+            circle at 90% 15%,
+            rgba(6,182,212,.12),
+            transparent 27%
+        ),
+        radial-gradient(
+            circle at 50% 100%,
+            rgba(99,102,241,.10),
+            transparent 30%
+        ),
+        linear-gradient(
+            135deg,
+            #f8fbff,
+            #eef5ff 50%,
+            #f9fcff
+        );
 
-    .hero {
-      margin-bottom: 28px;
-    }
+    background-attachment: fixed;
+}
 
-    .hero h1 {
-      font-size: 34px;
-      margin-bottom: 10px;
-    }
 
-    .hero p {
-      color: #667085;
-      max-width: 800px;
-      line-height: 1.6;
-    }
+/* subtle background grid */
 
-    .metrics {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 15px;
-      margin-bottom: 25px;
-    }
+body::before {
+    content: "";
 
-    .metric {
-      background: #ffffff;
-      border: 1px solid #e6e9ef;
-      border-radius: 14px;
-      padding: 18px;
-    }
+    position: fixed;
+    inset: 0;
 
-    .metric span {
-      font-size: 12px;
-      color: #667085;
-    }
+    background-image:
+        linear-gradient(
+            rgba(37,99,235,.035) 1px,
+            transparent 1px
+        ),
+        linear-gradient(
+            90deg,
+            rgba(37,99,235,.035) 1px,
+            transparent 1px
+        );
 
-    .metric strong {
-      display: block;
-      font-size: 19px;
-      margin-top: 7px;
-    }
+    background-size:
+        40px 40px;
+
+    pointer-events: none;
+
+    z-index: -1;
+}
+
+
+/* ================================
+   HEADER
+================================ */
+
+header {
+
+    height: 72px;
+
+    padding:
+        0 6%;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content:
+        space-between;
+
+    background:
+        rgba(255,255,255,.87);
+
+    backdrop-filter:
+        blur(18px);
+
+    border-bottom:
+        1px solid rgba(228,231,236,.9);
+
+    position: sticky;
+
+    top: 0;
+
+    z-index: 50;
+}
+
+
+.brand {
+    display: flex;
+
+    align-items: center;
+
+    gap: 12px;
+}
+
+
+.brand-icon {
+
+    width: 42px;
+
+    height: 42px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    border-radius: 12px;
+
+    background:
+        linear-gradient(
+            135deg,
+            #2563eb,
+            #06b6d4
+        );
+
+    color: white;
+
+    font-size: 21px;
+
+    box-shadow:
+        0 6px 18px
+        rgba(37,99,235,.23);
+}
+
+
+.brand h2 {
+
+    font-size: 18px;
+}
+
+
+.brand p {
+
+    margin-top: 3px;
+
+    color: var(--muted);
+
+    font-size: 11px;
+}
+
+
+.status {
+
+    padding:
+        7px 12px;
+
+    border-radius:
+        30px;
+
+    border:
+        1px solid #abefc6;
+
+    background:
+        var(--success-bg);
+
+    color:
+        var(--success);
+
+    font-size:
+        10px;
+
+    font-weight:
+        700;
+}
+
+
+/* ================================
+   PAGE
+================================ */
+
+.container {
+
+    width: 92%;
+
+    max-width:
+        1250px;
+
+    margin:
+        45px auto 70px;
+}
+
+
+/* ================================
+   HERO
+================================ */
+
+.hero {
+
+    max-width:
+        760px;
+
+    margin:
+        0 auto 35px;
+
+    text-align:
+        center;
+}
+
+
+.hero-badge {
+
+    display:
+        inline-block;
+
+    padding:
+        7px 12px;
+
+    margin-bottom:
+        14px;
+
+    border:
+        1px solid #b2ccff;
+
+    border-radius:
+        30px;
+
+    background:
+        rgba(255,255,255,.7);
+
+    color:
+        #175cd3;
+
+    font-size:
+        10px;
+
+    font-weight:
+        700;
+}
+
+
+.hero h1 {
+
+    margin-bottom:
+        12px;
+
+    font-size:
+        clamp(
+            30px,
+            5vw,
+            44px
+        );
+
+    letter-spacing:
+        -1.3px;
+}
+
+
+.hero h1 span {
+
+    background:
+        linear-gradient(
+            90deg,
+            #2563eb,
+            #0891b2
+        );
+
+    -webkit-background-clip:
+        text;
+
+    color:
+        transparent;
+}
+
+
+.hero p {
+
+    max-width:
+        650px;
+
+    margin:
+        auto;
+
+    color:
+        var(--muted);
+
+    font-size:
+        13px;
+
+    line-height:
+        1.7;
+}
+
+
+/* ================================
+   MAIN GRID
+================================ */
+
+.main-grid {
+
+    display:
+        grid;
+
+    grid-template-columns:
+        .9fr 1.1fr;
+
+    gap:
+        24px;
+}
+
+
+/* ================================
+   CARD
+================================ */
+
+.card {
+
+    padding:
+        26px;
+
+    border:
+        1px solid
+        rgba(228,231,236,.9);
+
+    border-radius:
+        20px;
+
+    background:
+        rgba(255,255,255,.9);
+
+    backdrop-filter:
+        blur(18px);
+
+    box-shadow:
+        0 15px 40px
+        rgba(16,24,40,.07);
+}
+
+
+.card-title {
+
+    margin-bottom:
+        20px;
+}
+
+
+.card-title h3 {
+
+    margin-bottom:
+        5px;
+
+    font-size:
+        17px;
+}
+
+
+.card-title p {
+
+    color:
+        var(--muted);
+
+    font-size:
+        11px;
+
+    line-height:
+        1.5;
+}
+
+
+/* ================================
+   UPLOAD
+================================ */
+
+.upload-zone {
+
+    width:
+        100%;
+
+    min-height:
+        300px;
+
+    display:
+        flex;
+
+    flex-direction:
+        column;
+
+    justify-content:
+        center;
+
+    align-items:
+        center;
+
+    padding:
+        35px 25px;
+
+    border:
+        2px dashed
+        #b6c6da;
+
+    border-radius:
+        17px;
+
+    background:
+        linear-gradient(
+            145deg,
+            #fbfdff,
+            #f5f9ff
+        );
+
+    text-align:
+        center;
+
+    cursor:
+        pointer;
+
+    transition:
+        .25s;
+}
+
+
+.upload-zone:hover,
+.upload-zone.dragover {
+
+    border-color:
+        var(--primary);
+
+    background:
+        #f0f6ff;
+
+    transform:
+        translateY(-2px);
+
+    box-shadow:
+        0 10px 30px
+        rgba(37,99,235,.08);
+}
+
+
+.upload-icon {
+
+    width:
+        78px;
+
+    height:
+        78px;
+
+    display:
+        flex;
+
+    align-items:
+        center;
+
+    justify-content:
+        center;
+
+    margin-bottom:
+        18px;
+
+    border:
+        1px solid
+        #d5e5ff;
+
+    border-radius:
+        21px;
+
+    background:
+        linear-gradient(
+            135deg,
+            #e8f1ff,
+            #e8fbff
+        );
+
+    font-size:
+        38px;
+}
+
+
+.upload-zone h4 {
+
+    margin-bottom:
+        7px;
+
+    font-size:
+        16px;
+}
+
+
+.upload-zone p {
+
+    margin-bottom:
+        18px;
+
+    color:
+        var(--muted);
+
+    font-size:
+        11px;
+}
+
+
+.choose-file {
+
+    padding:
+        10px 18px;
+
+    margin-bottom:
+        12px;
+
+    border:
+        1px solid
+        #b2ccff;
+
+    border-radius:
+        9px;
+
+    background:
+        white;
+
+    color:
+        #175cd3;
+
+    font-size:
+        11px;
+
+    font-weight:
+        700;
+}
+
+
+.file-support {
+
+    color:
+        #98a2b3;
+
+    font-size:
+        9px;
+}
+
+
+#fileInput {
+
+    display:
+        none;
+}
+
+
+/* ================================
+   FILE INFO
+================================ */
+
+.file-box {
+
+    display:
+        none;
+
+    align-items:
+        center;
+
+    justify-content:
+        space-between;
+
+    margin-top:
+        14px;
+
+    padding:
+        11px 13px;
+
+    border:
+        1px solid
+        var(--border);
+
+    border-radius:
+        10px;
+
+    background:
+        white;
+}
+
+
+.file-details {
+
+    display:
+        flex;
+
+    align-items:
+        center;
+
+    gap:
+        10px;
+}
+
+
+.file-details-icon {
+
+    width:
+        38px;
+
+    height:
+        38px;
+
+    display:
+        flex;
+
+    align-items:
+        center;
+
+    justify-content:
+        center;
+
+    border-radius:
+        8px;
+
+    background:
+        #eff6ff;
+}
+
+
+.file-name {
+
+    font-size:
+        11px;
+
+    font-weight:
+        700;
+}
+
+
+.file-size {
+
+    margin-top:
+        3px;
+
+    color:
+        #98a2b3;
+
+    font-size:
+        9px;
+}
+
+
+.remove {
+
+    width:
+        29px;
+
+    height:
+        29px;
+
+    border:
+        0;
+
+    border-radius:
+        7px;
+
+    background:
+        transparent;
+
+    color:
+        #667085;
+
+    cursor:
+        pointer;
+
+    font-size:
+        20px;
+}
+
+
+.remove:hover {
+
+    background:
+        #fef3f2;
+
+    color:
+        var(--danger);
+}
+
+
+/* ================================
+   PREVIEW
+================================ */
+
+.preview-container {
+
+    display:
+        none;
+
+    margin-top:
+        14px;
+
+    overflow:
+        hidden;
+
+    border:
+        1px solid
+        var(--border);
+
+    border-radius:
+        11px;
+
+    background:
+        #f8fafc;
+}
+
+
+.preview-header {
+
+    display:
+        flex;
+
+    justify-content:
+        space-between;
+
+    padding:
+        9px 12px;
+
+    border-bottom:
+        1px solid
+        var(--border);
+
+    background:
+        white;
+
+    color:
+        #475467;
+
+    font-size:
+        9px;
+
+    font-weight:
+        700;
+}
+
+
+.preview-ready {
+
+    color:
+        var(--success);
+}
+
+
+#preview {
+
+    display:
+        block;
+
+    width:
+        100%;
+
+    max-height:
+        330px;
+
+    padding:
+        14px;
+
+    object-fit:
+        contain;
+}
+
+
+/* ================================
+   PROCESS BUTTON
+================================ */
+
+#scanButton {
+
+    width:
+        100%;
+
+    margin-top:
+        16px;
+
+    padding:
+        14px;
+
+    border:
+        0;
+
+    border-radius:
+        10px;
+
+    background:
+        linear-gradient(
+            90deg,
+            #2563eb,
+            #0ea5e9
+        );
+
+    color:
+        white;
+
+    cursor:
+        pointer;
+
+    font-size:
+        12px;
+
+    font-weight:
+        700;
+
+    box-shadow:
+        0 7px 18px
+        rgba(37,99,235,.20);
+
+    transition:
+        .2s;
+}
+
+
+#scanButton:hover:not(:disabled) {
+
+    transform:
+        translateY(-1px);
+}
+
+
+#scanButton:disabled {
+
+    background:
+        #a8b3c5;
+
+    box-shadow:
+        none;
+
+    cursor:
+        not-allowed;
+}
+
+
+/* ================================
+   PROGRESS
+================================ */
+
+.progress-container {
+
+    display:
+        none;
+
+    margin-top:
+        16px;
+}
+
+
+.progress-text {
+
+    display:
+        flex;
+
+    justify-content:
+        space-between;
+
+    margin-bottom:
+        7px;
+
+    color:
+        var(--muted);
+
+    font-size:
+        9px;
+}
+
+
+.progress-track {
+
+    height:
+        7px;
+
+    overflow:
+        hidden;
+
+    border-radius:
+        20px;
+
+    background:
+        #eaecf0;
+}
+
+
+#progressBar {
+
+    width:
+        0%;
+
+    height:
+        100%;
+
+    border-radius:
+        20px;
+
+    background:
+        linear-gradient(
+            90deg,
+            #2563eb,
+            #06b6d4
+        );
+
+    transition:
+        width .2s;
+}
+
+
+/* ================================
+   RESULTS
+================================ */
+
+.result-status {
+
+    display:
+        flex;
+
+    align-items:
+        center;
+
+    gap:
+        8px;
+
+    margin-bottom:
+        17px;
+
+    padding:
+        11px 13px;
+
+    border:
+        1px solid
+        #e4e7ec;
+
+    border-radius:
+        10px;
+
+    background:
+        #f8fafc;
+
+    color:
+        #475467;
+
+    font-size:
+        10px;
+}
+
+
+.result-status.completed {
+
+    border-color:
+        #abefc6;
+
+    background:
+        #ecfdf3;
+
+    color:
+        var(--success);
+}
+
+
+.results {
+
+    display:
+        grid;
+
+    grid-template-columns:
+        1fr 1fr;
+
+    gap:
+        12px;
+}
+
+
+.result {
+
+    padding:
+        13px;
+
+    border:
+        1px solid
+        var(--border);
+
+    border-radius:
+        10px;
+
+    background:
+        #fafbfc;
+}
+
+
+.result.full {
+
+    grid-column:
+        1 / -1;
+}
+
+
+.result label {
+
+    display:
+        block;
+
+    margin-bottom:
+        6px;
+
+    color:
+        var(--muted);
+
+    font-size:
+        8px;
+
+    font-weight:
+        800;
+
+    letter-spacing:
+        .4px;
+
+    text-transform:
+        uppercase;
+}
+
+
+.result-value {
+
+    min-height:
+        19px;
+
+    color:
+        #344054;
+
+    font-size:
+        12px;
+
+    line-height:
+        1.5;
+
+    word-break:
+        break-word;
+}
+
+
+.null {
+
+    color:
+        #98a2b3;
+}
+
+
+/* ================================
+   JSON
+================================ */
+
+.json-card {
+
+    margin-top:
+        24px;
+}
+
+
+.json-header {
+
+    display:
+        flex;
+
+    justify-content:
+        space-between;
+
+    align-items:
+        center;
+
+    margin-bottom:
+        14px;
+}
+
+
+.json-header h3 {
+
+    font-size:
+        15px;
+}
+
+
+.copy {
+
+    padding:
+        8px 13px;
+
+    border:
+        1px solid
+        #b2ccff;
+
+    border-radius:
+        8px;
+
+    background:
+        white;
+
+    color:
+        #175cd3;
+
+    cursor:
+        pointer;
+
+    font-size:
+        10px;
+
+    font-weight:
+        700;
+}
+
+
+#jsonOutput {
+
+    width:
+        100%;
+
+    min-height:
+        245px;
+
+    padding:
+        16px;
+
+    border:
+        0;
+
+    border-radius:
+        12px;
+
+    outline:
+        none;
+
+    resize:
+        vertical;
+
+    background:
+        #101828;
+
+    color:
+        #dbeafe;
+
+    font-family:
+        Consolas,
+        monospace;
+
+    font-size:
+        11px;
+
+    line-height:
+        1.65;
+}
+
+
+/* ================================
+   PRIVACY
+================================ */
+
+.privacy {
+
+    margin-top:
+        16px;
+
+    padding:
+        11px;
+
+    border:
+        1px solid
+        var(--border);
+
+    border-radius:
+        9px;
+
+    background:
+        #f8fafc;
+
+    color:
+        var(--muted);
+
+    font-size:
+        9px;
+
+    line-height:
+        1.5;
+}
+
+
+/* ================================
+   RESPONSIVE
+================================ */
+
+@media(max-width:850px) {
 
     .main-grid {
-      display: grid;
-      grid-template-columns: 0.9fr 1.1fr;
-      gap: 24px;
+
+        grid-template-columns:
+            1fr;
     }
+
+}
+
+
+@media(max-width:550px) {
+
+    .container {
+
+        width:
+            94%;
+    }
+
 
     .card {
-      background: #ffffff;
-      border: 1px solid #e6e9ef;
-      border-radius: 16px;
-      padding: 24px;
-      box-shadow: 0 8px 30px rgba(16, 24, 40, 0.04);
+
+        padding:
+            18px;
     }
 
-    .card h3 {
-      font-size: 17px;
-      margin-bottom: 18px;
+
+    .results {
+
+        grid-template-columns:
+            1fr;
     }
 
-    .upload-zone {
-      border: 2px dashed #b8c2d1;
-      border-radius: 14px;
-      padding: 35px 20px;
-      text-align: center;
-      cursor: pointer;
-      background: #fbfcfe;
-      transition: 0.2s;
+
+    .result.full {
+
+        grid-column:
+            auto;
     }
 
-    .upload-zone:hover {
-      border-color: #2563eb;
-      background: #f6f9ff;
+
+    .status {
+
+        display:
+            none;
     }
 
-    .upload-icon {
-      font-size: 42px;
-      margin-bottom: 12px;
-    }
+}
 
-    .upload-zone p {
-      color: #667085;
-      font-size: 13px;
-      margin-top: 7px;
-    }
-
-    input[type="file"] {
-      display: none;
-    }
-
-    #preview {
-      display: none;
-      width: 100%;
-      max-height: 360px;
-      object-fit: contain;
-      margin-top: 20px;
-      border-radius: 12px;
-      background: #f2f4f7;
-      border: 1px solid #e5e7eb;
-    }
-
-    button {
-      border: 0;
-      cursor: pointer;
-      font-weight: 700;
-      border-radius: 10px;
-      transition: 0.2s;
-    }
-
-    #scanButton {
-      width: 100%;
-      margin-top: 18px;
-      padding: 14px;
-      background: #2563eb;
-      color: white;
-      font-size: 14px;
-    }
-
-    #scanButton:hover {
-      background: #1d4ed8;
-    }
-
-    #scanButton:disabled {
-      background: #98a2b3;
-      cursor: not-allowed;
-    }
-
-    .progress-wrapper {
-      display: none;
-      margin-top: 20px;
-    }
-
-    .progress-track {
-      height: 9px;
-      background: #e5e7eb;
-      border-radius: 20px;
-      overflow: hidden;
-    }
-
-    #progressBar {
-      height: 100%;
-      width: 0;
-      background: #2563eb;
-      transition: width 0.2s;
-    }
-
-    #progressText {
-      margin-top: 8px;
-      font-size: 12px;
-      color: #667085;
-    }
-
-    .fields-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 14px;
-    }
-
-    .field {
-      border: 1px solid #e5e7eb;
-      border-radius: 11px;
-      padding: 13px;
-      background: #fafbfc;
-    }
-
-    .field.full {
-      grid-column: 1 / -1;
-    }
-
-    .field label {
-      display: block;
-      color: #667085;
-      font-size: 11px;
-      font-weight: 700;
-      text-transform: uppercase;
-      margin-bottom: 7px;
-    }
-
-    .field-value {
-      font-size: 14px;
-      min-height: 20px;
-      word-break: break-word;
-    }
-
-    .empty {
-      color: #98a2b3;
-    }
-
-    .success {
-      color: #15803d;
-      font-weight: 700;
-    }
-
-    .warning {
-      color: #b54708;
-    }
-
-    .full-card {
-      grid-column: 1 / -1;
-      margin-top: 24px;
-    }
-
-    .tabs {
-      display: flex;
-      gap: 8px;
-      margin-bottom: 16px;
-    }
-
-    .tab {
-      padding: 9px 14px;
-      background: #eef2f6;
-      color: #344054;
-      font-size: 12px;
-    }
-
-    .tab.active {
-      background: #2563eb;
-      color: white;
-    }
-
-    textarea {
-      width: 100%;
-      height: 260px;
-      border: 1px solid #e5e7eb;
-      border-radius: 10px;
-      padding: 15px;
-      font-family: Consolas, monospace;
-      font-size: 13px;
-      line-height: 1.6;
-      resize: vertical;
-      background: #fafafa;
-    }
-
-    .json-actions {
-      margin-top: 12px;
-      display: flex;
-      justify-content: flex-end;
-    }
-
-    #copyButton {
-      padding: 10px 15px;
-      background: #eef2ff;
-      color: #3448c5;
-    }
-
-    .privacy {
-      margin-top: 18px;
-      padding: 13px;
-      background: #f8fafc;
-      border-radius: 10px;
-      color: #667085;
-      font-size: 12px;
-      line-height: 1.5;
-    }
-
-    @media (max-width: 850px) {
-      .metrics {
-        grid-template-columns: 1fr 1fr;
-      }
-
-      .main-grid {
-        grid-template-columns: 1fr;
-      }
-    }
-
-    @media (max-width: 550px) {
-      .metrics,
-      .fields-grid {
-        grid-template-columns: 1fr;
-      }
-
-      .field.full {
-        grid-column: auto;
-      }
-
-      .hero h1 {
-        font-size: 27px;
-      }
-    }
-  </style>
+</style>
 </head>
+
 
 <body>
 
-<header>
-  <div class="logo">
-    <h2>OCR Enablement</h2>
-    <p>Malaysian Identity Document Extraction</p>
-  </div>
 
-  <div class="status-badge">
-    MyKad OCR Workflow
-  </div>
+<header>
+
+    <div class="brand">
+
+        <div class="brand-icon">
+            ◉
+        </div>
+
+        <div>
+
+            <h2>
+                OCR Enablement
+            </h2>
+
+            <p>
+                Document Information Extraction
+            </p>
+
+        </div>
+
+    </div>
+
+
+    <div class="status">
+        ● System Ready
+    </div>
+
 </header>
+
 
 
 <main class="container">
 
-  <section class="hero">
-    <h1>Malaysia MyKad OCR</h1>
+
+<!-- HERO -->
+
+<section class="hero">
+
+    <div class="hero-badge">
+        ✦ DOCUMENT EXTRACTION
+    </div>
+
+    <h1>
+        Malaysia
+        <span>NRIC Reader</span>
+    </h1>
 
     <p>
-      Upload a Malaysian MyKad image to demonstrate document OCR,
-      identity number detection, structured information extraction
-      and JSON output for automation workflows.
+        Upload a Malaysian MyKad image to automatically
+        read the document and convert the detected
+        information into structured data.
     </p>
-  </section>
+
+</section>
 
 
-  <section class="metrics">
 
-    <div class="metric">
-      <span>Document Profile</span>
-      <strong>MyKad</strong>
-    </div>
-
-    <div class="metric">
-      <span>OCR Engine</span>
-      <strong>Tesseract.js</strong>
-    </div>
-
-    <div class="metric">
-      <span>KCR Accuracy Target</span>
-      <strong>≥90%</strong>
-    </div>
-
-    <div class="metric">
-      <span>Output</span>
-      <strong>JSON</strong>
-    </div>
-
-  </section>
+<div class="main-grid">
 
 
-  <section class="main-grid">
+<!-- ==============================
+     UPLOAD
+================================ -->
 
-    <!-- UPLOAD -->
+<section class="card">
 
-    <div class="card">
+    <div class="card-title">
 
-      <h3>1. Upload MyKad</h3>
-
-      <label class="upload-zone" for="fileInput">
-
-        <div class="upload-icon">🪪</div>
-
-        <strong>Select MyKad Image</strong>
+        <h3>
+            Upload NRIC
+        </h3>
 
         <p>
-          Upload JPG, JPEG or PNG
+            Upload the front side of a Malaysian
+            MyKad for information extraction.
         </p>
 
-      </label>
+    </div>
 
-      <input
+
+    <label
+        class="upload-zone"
+        id="uploadZone"
+        for="fileInput"
+    >
+
+        <div class="upload-icon">
+            🪪
+        </div>
+
+        <h4>
+            Drag & drop your MyKad here
+        </h4>
+
+        <p>
+            or select an image from your device
+        </p>
+
+        <div class="choose-file">
+            Choose MyKad Image
+        </div>
+
+        <div class="file-support">
+            JPG, JPEG or PNG • Maximum 10 MB
+        </div>
+
+    </label>
+
+
+    <input
         id="fileInput"
         type="file"
         accept="image/jpeg,image/png"
-      >
+    >
 
-      <img
-        id="preview"
-        alt="Uploaded MyKad preview"
-      >
 
-      <button
+
+    <!-- FILE -->
+
+    <div
+        class="file-box"
+        id="fileBox"
+    >
+
+        <div class="file-details">
+
+            <div class="file-details-icon">
+                📄
+            </div>
+
+            <div>
+
+                <div
+                    class="file-name"
+                    id="fileName"
+                >
+                    document.jpg
+                </div>
+
+                <div
+                    class="file-size"
+                    id="fileSize"
+                >
+                    0 KB
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <button
+            type="button"
+            class="remove"
+            onclick="removeFile()"
+        >
+            ×
+        </button>
+
+    </div>
+
+
+
+    <!-- PREVIEW -->
+
+    <div
+        class="preview-container"
+        id="previewContainer"
+    >
+
+        <div class="preview-header">
+
+            <span>
+                DOCUMENT PREVIEW
+            </span>
+
+            <span class="preview-ready">
+                ● READY
+            </span>
+
+        </div>
+
+
+        <img
+            id="preview"
+            alt="MyKad preview"
+        >
+
+    </div>
+
+
+
+    <button
         id="scanButton"
         disabled
-      >
-        Scan MyKad
-      </button>
+    >
+        ✦ Extract Information
+    </button>
 
 
-      <div
-        id="progressWrapper"
-        class="progress-wrapper"
-      >
+
+    <!-- PROGRESS -->
+
+    <div
+        class="progress-container"
+        id="progressContainer"
+    >
+
+        <div class="progress-text">
+
+            <span id="progressLabel">
+                Reading document...
+            </span>
+
+            <span id="progressPercent">
+                0%
+            </span>
+
+        </div>
+
 
         <div class="progress-track">
-          <div id="progressBar"></div>
+
+            <div id="progressBar">
+            </div>
+
         </div>
-
-        <div id="progressText">
-          Waiting...
-        </div>
-
-      </div>
-
-
-      <div class="privacy">
-        Demo recommendation: use synthetic or authorised test
-        documents only. Avoid committing identity document images
-        or extracted personal data to GitHub.
-      </div>
 
     </div>
 
 
-    <!-- RESULTS -->
 
-    <div class="card">
+    <div class="privacy">
 
-      <h3>2. Extracted Information</h3>
-
-      <div class="fields-grid">
-
-        <div class="field">
-          <label>Document Type</label>
-
-          <div
-            class="field-value empty"
-            id="documentType"
-          >
-            Not processed
-          </div>
-        </div>
-
-
-        <div class="field">
-          <label>OCR Confidence</label>
-
-          <div
-            class="field-value empty"
-            id="confidence"
-          >
-            -
-          </div>
-        </div>
-
-
-        <div class="field full">
-          <label>IC Number</label>
-
-          <div
-            class="field-value empty"
-            id="icNumber"
-          >
-            -
-          </div>
-        </div>
-
-
-        <div class="field full">
-          <label>Full Name</label>
-
-          <div
-            class="field-value empty"
-            id="fullName"
-          >
-            -
-          </div>
-        </div>
-
-
-        <div class="field">
-          <label>Date of Birth</label>
-
-          <div
-            class="field-value empty"
-            id="dob"
-          >
-            -
-          </div>
-        </div>
-
-
-        <div class="field">
-          <label>Gender</label>
-
-          <div
-            class="field-value empty"
-            id="gender"
-          >
-            -
-          </div>
-        </div>
-
-
-        <div class="field full">
-          <label>Address</label>
-
-          <div
-            class="field-value empty"
-            id="address"
-          >
-            -
-          </div>
-        </div>
-
-
-        <div class="field">
-          <label>Nationality / Citizenship</label>
-
-          <div
-            class="field-value empty"
-            id="nationality"
-          >
-            -
-          </div>
-        </div>
-
-
-        <div class="field">
-          <label>Workflow Status</label>
-
-          <div
-            class="field-value"
-            id="workflowStatus"
-          >
-            Waiting for document
-          </div>
-        </div>
-
-      </div>
+        🛡️ Use synthetic or authorised test
+        documents. Do not upload NRIC images
+        to your GitHub repository.
 
     </div>
 
-  </section>
+</section>
 
 
-  <!-- OUTPUT -->
 
-  <section class="card full-card">
+<!-- ==============================
+     RESULTS
+================================ -->
 
-    <h3>3. OCR Output</h3>
+<section class="card">
 
-    <div class="tabs">
+    <div class="card-title">
 
-      <button
-        class="tab active"
-        onclick="showJSON()"
-      >
-        JSON
-      </button>
+        <h3>
+            Extracted Result
+        </h3>
 
-      <button
-        class="tab"
-        onclick="showRawText()"
-      >
-        Raw OCR
-      </button>
+        <p>
+            Information detected from the
+            uploaded NRIC.
+        </p>
+
+    </div>
+
+
+    <div
+        class="result-status"
+        id="resultStatus"
+    >
+        ○ Waiting for document
+    </div>
+
+
+
+    <div class="results">
+
+
+        <div class="result full">
+
+            <label>
+                IC Number
+            </label>
+
+            <div
+                class="result-value null"
+                id="icNumber"
+            >
+                null
+            </div>
+
+        </div>
+
+
+
+        <div class="result full">
+
+            <label>
+                Full Name
+            </label>
+
+            <div
+                class="result-value null"
+                id="fullName"
+            >
+                null
+            </div>
+
+        </div>
+
+
+
+        <div class="result">
+
+            <label>
+                Date of Birth
+            </label>
+
+            <div
+                class="result-value null"
+                id="dob"
+            >
+                null
+            </div>
+
+        </div>
+
+
+
+        <div class="result">
+
+            <label>
+                Gender
+            </label>
+
+            <div
+                class="result-value null"
+                id="gender"
+            >
+                null
+            </div>
+
+        </div>
+
+
+
+        <div class="result full">
+
+            <label>
+                Address
+            </label>
+
+            <div
+                class="result-value null"
+                id="address"
+            >
+                null
+            </div>
+
+        </div>
+
+
+
+        <div class="result full">
+
+            <label>
+                Nationality / Citizenship
+            </label>
+
+            <div
+                class="result-value null"
+                id="nationality"
+            >
+                null
+            </div>
+
+        </div>
+
+
+    </div>
+
+</section>
+
+
+</div>
+
+
+
+<!-- ==============================
+     JSON RESULT
+================================ -->
+
+<section class="card json-card">
+
+    <div class="json-header">
+
+        <h3>
+            Structured Result
+        </h3>
+
+        <button
+            class="copy"
+            onclick="copyResult()"
+        >
+            Copy JSON
+        </button>
 
     </div>
 
 
     <textarea
-      id="output"
-      readonly
-      placeholder="OCR output will appear here..."
-    ></textarea>
+        id="jsonOutput"
+        readonly
+    >{
+  "IC_Number": null,
+  "Full_Name": null,
+  "Date_of_Birth": null,
+  "Gender": null,
+  "Address": null,
+  "Nationality": null
+}</textarea>
 
+</section>
 
-    <div class="json-actions">
-
-      <button
-        id="copyButton"
-        onclick="copyOutput()"
-      >
-        Copy Output
-      </button>
-
-    </div>
-
-  </section>
 
 </main>
 
 
+
 <script>
 
-  const fileInput =
-    document.getElementById("fileInput");
+/* ================================
+   ELEMENTS
+================================ */
 
-  const preview =
-    document.getElementById("preview");
+const fileInput =
+    document.getElementById(
+        "fileInput"
+    );
 
-  const scanButton =
-    document.getElementById("scanButton");
+const uploadZone =
+    document.getElementById(
+        "uploadZone"
+    );
 
-  const progressWrapper =
-    document.getElementById("progressWrapper");
+const fileBox =
+    document.getElementById(
+        "fileBox"
+    );
 
-  const progressBar =
-    document.getElementById("progressBar");
+const fileName =
+    document.getElementById(
+        "fileName"
+    );
 
-  const progressText =
-    document.getElementById("progressText");
+const fileSize =
+    document.getElementById(
+        "fileSize"
+    );
 
-  const output =
-    document.getElementById("output");
+const previewContainer =
+    document.getElementById(
+        "previewContainer"
+    );
+
+const preview =
+    document.getElementById(
+        "preview"
+    );
+
+const scanButton =
+    document.getElementById(
+        "scanButton"
+    );
+
+const progressContainer =
+    document.getElementById(
+        "progressContainer"
+    );
+
+const progressBar =
+    document.getElementById(
+        "progressBar"
+    );
+
+const progressLabel =
+    document.getElementById(
+        "progressLabel"
+    );
+
+const progressPercent =
+    document.getElementById(
+        "progressPercent"
+    );
+
+const resultStatus =
+    document.getElementById(
+        "resultStatus"
+    );
+
+const jsonOutput =
+    document.getElementById(
+        "jsonOutput"
+    );
 
 
-  let selectedFile = null;
-  let rawOCRText = "";
+let selectedFile = null;
 
-  let extractedData = {
+
+let resultData = {
+
     IC_Number: null,
+
     Full_Name: null,
+
     Date_of_Birth: null,
+
     Gender: null,
+
     Address: null,
+
     Nationality: null
-  };
+
+};
 
 
-  /*
-   ========================================
-   IMAGE UPLOAD
-   ========================================
-  */
 
-  fileInput.addEventListener(
+/* ================================
+   FILE SELECT
+================================ */
+
+fileInput.addEventListener(
     "change",
-    function(event) {
+    function() {
 
-      const file =
-        event.target.files[0];
+        if (
+            this.files.length
+        ) {
 
-      if (!file) return;
+            handleFile(
+                this.files[0]
+            );
 
-
-      if (!file.type.startsWith("image/")) {
-
-        alert(
-          "Please upload a valid JPG, JPEG or PNG image."
-        );
-
-        return;
-      }
-
-
-      selectedFile = file;
-
-      const imageURL =
-        URL.createObjectURL(file);
-
-      preview.src = imageURL;
-
-      preview.style.display =
-        "block";
-
-      scanButton.disabled =
-        false;
-
-      setValue(
-        "workflowStatus",
-        "Ready to process"
-      );
+        }
 
     }
-  );
+);
 
 
-  /*
-   ========================================
-   START OCR
-   ========================================
-  */
 
-  scanButton.addEventListener(
-    "click",
-    async function() {
+/* ================================
+   DRAG DROP
+================================ */
 
-      if (!selectedFile)
-        return;
+uploadZone.addEventListener(
+    "dragover",
+    function(e) {
 
+        e.preventDefault();
 
-      resetResults();
-
-      scanButton.disabled =
-        true;
-
-      progressWrapper.style.display =
-        "block";
-
-      setValue(
-        "workflowStatus",
-        "Processing OCR..."
-      );
-
-
-      try {
-
-        const result =
-          await Tesseract.recognize(
-
-            selectedFile,
-
-            "eng",
-
-            {
-
-              logger: message => {
-
-                if (message.progress) {
-
-                  const percent =
-                    Math.round(
-                      message.progress * 100
-                    );
-
-                  progressBar.style.width =
-                    percent + "%";
-
-                  progressText.innerText =
-                    message.status +
-                    " - " +
-                    percent +
-                    "%";
-
-                }
-
-              }
-
-            }
-
-          );
-
-
-        rawOCRText =
-          result.data.text || "";
-
-
-        const confidence =
-          Number(
-            result.data.confidence || 0
-          );
-
-
-        processOCR(
-          rawOCRText,
-          confidence
-        );
-
-
-        progressBar.style.width =
-          "100%";
-
-        progressText.innerText =
-          "OCR completed";
-
-        setValue(
-          "workflowStatus",
-          "OCR Completed",
-          "success"
-        );
-
-      }
-
-      catch(error) {
-
-        console.error(error);
-
-        progressText.innerText =
-          "OCR processing failed.";
-
-        setValue(
-          "workflowStatus",
-          "OCR Failed",
-          "warning"
-        );
-
-      }
-
-      finally {
-
-        scanButton.disabled =
-          false;
-
-      }
+        uploadZone
+            .classList
+            .add(
+                "dragover"
+            );
 
     }
-  );
+);
 
 
-  /*
-   ========================================
-   OCR PROCESSING
-   ========================================
-  */
+uploadZone.addEventListener(
+    "dragleave",
+    function() {
 
-  function processOCR(
-    text,
-    confidence
-  ) {
-
-    const cleanText =
-      text.replace(/\r/g, "");
-
-    const upper =
-      cleanText.toUpperCase();
-
-
-    /*
-     ----------------------------------------
-     IC NUMBER
-     ----------------------------------------
-    */
-
-    const icNumber =
-      extractICNumber(cleanText);
-
-
-    /*
-     ----------------------------------------
-     DATE OF BIRTH
-
-     Derived only when the full IC number
-     is confidently extracted.
-     ----------------------------------------
-    */
-
-    const dateOfBirth =
-      icNumber
-        ? deriveDOB(icNumber)
-        : null;
-
-
-    /*
-     ----------------------------------------
-     NATIONALITY / CITIZENSHIP
-
-     Only explicitly visible values.
-     ----------------------------------------
-    */
-
-    let nationality = null;
-
-    if (
-      /\bWARGANEGARA\b/i.test(cleanText)
-    ) {
-
-      nationality =
-        "WARGANEGARA";
+        uploadZone
+            .classList
+            .remove(
+                "dragover"
+            );
 
     }
-
-    else if (
-      /\bCITIZEN\b/i.test(cleanText)
-    ) {
-
-      nationality =
-        "CITIZEN";
-
-    }
+);
 
 
-    /*
-     ----------------------------------------
-     GENDER
+uploadZone.addEventListener(
+    "drop",
+    function(e) {
 
-     Strict rule:
-     Do NOT infer from IC number.
+        e.preventDefault();
 
-     Only return when explicitly detected.
-     ----------------------------------------
-    */
+        uploadZone
+            .classList
+            .remove(
+                "dragover"
+            );
 
-    let gender = null;
 
-    if (
-      /\bLELAKI\b/i.test(cleanText) ||
-      /\bMALE\b/i.test(cleanText)
-    ) {
+        const file =
+            e.dataTransfer
+             .files[0];
 
-      gender =
-        "MALE";
+
+        if (file) {
+
+            handleFile(file);
+
+        }
 
     }
-
-    else if (
-      /\bPEREMPUAN\b/i.test(cleanText) ||
-      /\bFEMALE\b/i.test(cleanText)
-    ) {
-
-      gender =
-        "FEMALE";
-
-    }
+);
 
 
-    /*
-     ----------------------------------------
-     NAME
 
-     Conservative heuristic extraction.
+/* ================================
+   HANDLE FILE
+================================ */
 
-     This deliberately returns null when
-     there is no sufficiently reliable line.
-     ----------------------------------------
-    */
+function handleFile(file) {
 
-    const fullName =
-      extractName(cleanText);
+    const types = [
 
+        "image/jpeg",
 
-    /*
-     ----------------------------------------
-     ADDRESS
-
-     Conservative extraction.
-     ----------------------------------------
-    */
-
-    const address =
-      extractAddress(cleanText);
-
-
-    extractedData = {
-
-      IC_Number:
-        icNumber,
-
-      Full_Name:
-        fullName,
-
-      Date_of_Birth:
-        dateOfBirth,
-
-      Gender:
-        gender,
-
-      Address:
-        address,
-
-      Nationality:
-        nationality
-
-    };
-
-
-    /*
-     ----------------------------------------
-     DOCUMENT TYPE
-     ----------------------------------------
-    */
-
-    let documentType =
-      "Unknown Document";
-
-
-    if (
-
-      upper.includes(
-        "KAD PENGENALAN"
-      )
-
-      ||
-
-      upper.includes(
-        "MALAYSIA"
-      )
-
-      ||
-
-      icNumber
-
-    ) {
-
-      documentType =
-        "Malaysia MyKad";
-
-    }
-
-
-    /*
-     ----------------------------------------
-     DISPLAY
-     ----------------------------------------
-    */
-
-    setValue(
-      "documentType",
-      documentType
-    );
-
-    setValue(
-      "confidence",
-      confidence.toFixed(2) + "%"
-    );
-
-    displayNullable(
-      "icNumber",
-      icNumber
-    );
-
-    displayNullable(
-      "fullName",
-      fullName
-    );
-
-    displayNullable(
-      "dob",
-      dateOfBirth
-    );
-
-    displayNullable(
-      "gender",
-      gender
-    );
-
-    displayNullable(
-      "address",
-      address
-    );
-
-    displayNullable(
-      "nationality",
-      nationality
-    );
-
-
-    showJSON();
-
-  }
-
-
-  /*
-   ========================================
-   IC NUMBER EXTRACTION
-   ========================================
-  */
-
-  function extractICNumber(text) {
-
-    /*
-     Supported:
-
-     900101-14-5678
-     900101 14 5678
-     900101141234
-    */
-
-    const patterns = [
-
-      /\b\d{6}-\d{2}-\d{4}\b/,
-
-      /\b\d{6}\s\d{2}\s\d{4}\b/,
-
-      /\b\d{12}\b/
+        "image/png"
 
     ];
 
 
-    for (
-      const pattern of patterns
+    if (
+        !types.includes(
+            file.type
+        )
     ) {
 
-      const match =
-        text.match(pattern);
+        alert(
+            "Please upload JPG, JPEG or PNG."
+        );
 
-
-      if (match) {
-
-        const digits =
-          match[0].replace(
-            /\D/g,
-            ""
-          );
-
-
-        if (
-          digits.length === 12
-        ) {
-
-          return digits;
-
-        }
-
-      }
+        return;
 
     }
 
 
-    return null;
-
-  }
-
-
-  /*
-   ========================================
-   DOB DERIVATION
-   ========================================
-  */
-
-  function deriveDOB(ic) {
-
     if (
-      !ic ||
-      !/^\d{12}$/.test(ic)
+        file.size >
+        10 * 1024 * 1024
     ) {
 
-      return null;
+        alert(
+            "Maximum file size is 10 MB."
+        );
+
+        return;
 
     }
 
 
-    const yy =
-      parseInt(
-        ic.substring(0, 2),
-        10
-      );
+    selectedFile =
+        file;
 
-    const mm =
-      parseInt(
-        ic.substring(2, 4),
-        10
-      );
 
-    const dd =
-      parseInt(
-        ic.substring(4, 6),
-        10
-      );
+    fileName.textContent =
+        file.name;
 
+
+    fileSize.textContent =
+        formatFileSize(
+            file.size
+        );
+
+
+    fileBox.style.display =
+        "flex";
+
+
+    preview.src =
+        URL.createObjectURL(
+            file
+        );
+
+
+    previewContainer.style.display =
+        "block";
+
+
+    scanButton.disabled =
+        false;
+
+
+    resultStatus.className =
+        "result-status";
+
+
+    resultStatus.textContent =
+        "○ Ready to extract";
+
+}
+
+
+
+/* ================================
+   REMOVE
+================================ */
+
+function removeFile() {
+
+    selectedFile =
+        null;
+
+
+    fileInput.value =
+        "";
+
+
+    preview.src =
+        "";
+
+
+    fileBox.style.display =
+        "none";
+
+
+    previewContainer.style.display =
+        "none";
+
+
+    progressContainer.style.display =
+        "none";
+
+
+    scanButton.disabled =
+        true;
+
+
+    resetResults();
+
+}
+
+
+
+/* ================================
+   SIZE
+================================ */
+
+function formatFileSize(
+    bytes
+) {
 
     if (
-      mm < 1 ||
-      mm > 12 ||
-      dd < 1 ||
-      dd > 31
+        bytes <
+        1024
     ) {
 
-      return null;
+        return (
+            bytes +
+            " B"
+        );
 
     }
 
 
-    const currentYear =
-      new Date().getFullYear();
-
-    const currentYY =
-      currentYear % 100;
-
-
-    /*
-     Century heuristic.
-
-     This is not treated as OCR extraction.
-     It is a derived field.
-    */
-
-    const year =
-      yy <= currentYY
-        ? 2000 + yy
-        : 1900 + yy;
-
-
-    const testDate =
-      new Date(
-        year,
-        mm - 1,
-        dd
-      );
-
-
     if (
-
-      testDate.getFullYear()
-        !== year
-
-      ||
-
-      testDate.getMonth()
-        !== mm - 1
-
-      ||
-
-      testDate.getDate()
-        !== dd
-
+        bytes <
+        1024 * 1024
     ) {
 
-      return null;
+        return (
+            bytes / 1024
+        ).toFixed(1) +
+        " KB";
 
     }
 
 
     return (
-      year +
-      "-" +
-      String(mm).padStart(2, "0") +
-      "-" +
-      String(dd).padStart(2, "0")
+        bytes /
+        (1024 * 1024)
+    ).toFixed(1) +
+    " MB";
+
+}
+
+
+
+/* ================================
+   PROCESS
+================================ */
+
+scanButton.addEventListener(
+    "click",
+    async function() {
+
+        if (
+            !selectedFile
+        ) {
+
+            return;
+
+        }
+
+
+        scanButton.disabled =
+            true;
+
+
+        progressContainer.style.display =
+            "block";
+
+
+        resultStatus.className =
+            "result-status";
+
+
+        resultStatus.textContent =
+            "○ Reading document...";
+
+
+        try {
+
+
+            const result =
+                await Tesseract
+                .recognize(
+
+                    selectedFile,
+
+                    "eng",
+
+                    {
+
+                        logger:
+                        message => {
+
+                            if (
+                                typeof
+                                message.progress
+                                ===
+                                "number"
+                            ) {
+
+                                const p =
+                                    Math.round(
+                                        message.progress *
+                                        100
+                                    );
+
+
+                                progressBar
+                                    .style
+                                    .width =
+                                    p + "%";
+
+
+                                progressPercent
+                                    .textContent =
+                                    p + "%";
+
+
+                                progressLabel
+                                    .textContent =
+                                    "Reading document...";
+
+                            }
+
+                        }
+
+                    }
+
+                );
+
+
+            processText(
+                result.data.text ||
+                ""
+            );
+
+
+            progressBar.style.width =
+                "100%";
+
+
+            progressPercent.textContent =
+                "100%";
+
+
+            progressLabel.textContent =
+                "Completed";
+
+
+            resultStatus.className =
+                "result-status completed";
+
+
+            resultStatus.textContent =
+                "● Extraction completed";
+
+
+        }
+
+        catch(error) {
+
+
+            console.error(
+                error
+            );
+
+
+            resultStatus.className =
+                "result-status";
+
+
+            resultStatus.textContent =
+                "Extraction failed";
+
+
+        }
+
+
+        finally {
+
+            scanButton.disabled =
+                false;
+
+        }
+
+    }
+);
+
+
+
+/* ================================
+   EXTRACT DATA
+================================ */
+
+function processText(text) {
+
+    const clean =
+        text.replace(
+            /\r/g,
+            ""
+        );
+
+
+    const upper =
+        clean.toUpperCase();
+
+
+    const ic =
+        extractIC(
+            clean
+        );
+
+
+    const dob =
+        ic
+        ? deriveDOB(ic)
+        : null;
+
+
+    const gender =
+        extractGender(
+            upper
+        );
+
+
+    const nationality =
+        extractNationality(
+            upper
+        );
+
+
+    const name =
+        extractName(
+            clean
+        );
+
+
+    const address =
+        extractAddress(
+            clean
+        );
+
+
+    resultData = {
+
+        IC_Number:
+            ic,
+
+        Full_Name:
+            name,
+
+        Date_of_Birth:
+            dob,
+
+        Gender:
+            gender,
+
+        Address:
+            address,
+
+        Nationality:
+            nationality
+
+    };
+
+
+    displayResult(
+        "icNumber",
+        ic
     );
 
-  }
+
+    displayResult(
+        "fullName",
+        name
+    );
 
 
-  /*
-   ========================================
-   NAME EXTRACTION
-   ========================================
-  */
-
-  function extractName(text) {
-
-    const lines =
-      text
-        .split("\n")
-        .map(
-          line => line.trim()
-        )
-        .filter(Boolean);
+    displayResult(
+        "dob",
+        dob
+    );
 
 
-    const ignored = [
+    displayResult(
+        "gender",
+        gender
+    );
 
-      "MALAYSIA",
 
-      "KAD PENGENALAN",
+    displayResult(
+        "address",
+        address
+    );
 
-      "IDENTITY CARD",
 
-      "WARGANEGARA",
+    displayResult(
+        "nationality",
+        nationality
+    );
 
-      "CITIZEN",
 
-      "LELAKI",
+    jsonOutput.value =
+        JSON.stringify(
+            resultData,
+            null,
+            2
+        );
 
-      "PEREMPUAN",
+}
 
-      "MALE",
 
-      "FEMALE"
+
+/* ================================
+   IC
+================================ */
+
+function extractIC(text) {
+
+    const patterns = [
+
+        /\b\d{6}-\d{2}-\d{4}\b/,
+
+        /\b\d{6}\s\d{2}\s\d{4}\b/,
+
+        /\b\d{12}\b/
 
     ];
 
 
     for (
-      const line of lines
+        const pattern
+        of patterns
     ) {
 
-      const upper =
-        line.toUpperCase();
+        const match =
+            text.match(
+                pattern
+            );
 
 
-      if (
-        ignored.some(
-          word =>
-            upper === word
-        )
-      ) {
+        if (match) {
 
-        continue;
-
-      }
+            const value =
+                match[0]
+                .replace(
+                    /\D/g,
+                    ""
+                );
 
 
-      if (
-        /\d{6}[-\s]?\d{2}[-\s]?\d{4}/
-          .test(line)
-      ) {
+            if (
+                value.length ===
+                12
+            ) {
 
-        continue;
+                return value;
 
-      }
-
-
-      /*
-       Candidate name must mainly
-       contain alphabetic characters.
-      */
-
-      if (
-        /^[A-Z @'.\/-]{4,}$/i
-          .test(line)
-      ) {
-
-        const words =
-          line.trim().split(/\s+/);
-
-
-        if (
-          words.length >= 2
-        ) {
-
-          return upper;
+            }
 
         }
-
-      }
 
     }
 
 
     return null;
 
-  }
+}
 
 
-  /*
-   ========================================
-   ADDRESS EXTRACTION
-   ========================================
-  */
 
-  function extractAddress(text) {
+/* ================================
+   DOB
+================================ */
 
-    const lines =
-      text
-        .split("\n")
-        .map(
-          line => line.trim()
-        )
-        .filter(Boolean);
+function deriveDOB(ic) {
 
-
-    /*
-     Address indicators commonly visible
-     in Malaysian addresses.
-
-     These are used only to identify
-     visible OCR lines. Missing content
-     is never invented.
-    */
-
-    const indicators =
-      /\b(NO\.?|JALAN|JLN|LORONG|TAMAN|KAMPUNG|KG\.?|BANDAR|PERSIARAN|TINGKAT|APARTMENT|PANGSAPURI|DESA|SEKSYEN)\b/i;
-
-
-    const addressLines = [];
-
-
-    for (
-      let i = 0;
-      i < lines.length;
-      i++
+    if (
+        !/^\d{12}$/
+        .test(ic)
     ) {
 
-      if (
-        indicators.test(
-          lines[i]
-        )
-      ) {
+        return null;
 
-        addressLines.push(
-          lines[i]
+    }
+
+
+    const yy =
+        Number(
+            ic.slice(
+                0,
+                2
+            )
         );
 
 
-        /*
-         Capture following visible lines
-         conservatively.
-        */
-
-        for (
-          let j = i + 1;
-          j < Math.min(
-            i + 4,
-            lines.length
-          );
-          j++
-        ) {
-
-          const next =
-            lines[j];
+    const mm =
+        Number(
+            ic.slice(
+                2,
+                4
+            )
+        );
 
 
-          if (
-            /WARGANEGARA|CITIZEN|LELAKI|PEREMPUAN|MALE|FEMALE/i
-              .test(next)
-          ) {
-
-            break;
-
-          }
-
-
-          addressLines.push(
-            next
-          );
-
-        }
+    const dd =
+        Number(
+            ic.slice(
+                4,
+                6
+            )
+        );
 
 
-        break;
+    if (
+        mm < 1 ||
+        mm > 12 ||
+        dd < 1 ||
+        dd > 31
+    ) {
 
-      }
+        return null;
+
+    }
+
+
+    const currentYear =
+        new Date()
+        .getFullYear();
+
+
+    const currentYY =
+        currentYear %
+        100;
+
+
+    const year =
+        yy <= currentYY
+        ? 2000 + yy
+        : 1900 + yy;
+
+
+    const date =
+        new Date(
+            year,
+            mm - 1,
+            dd
+        );
+
+
+    if (
+        date.getFullYear()
+            !== year ||
+
+        date.getMonth()
+            !== mm - 1 ||
+
+        date.getDate()
+            !== dd
+    ) {
+
+        return null;
+
+    }
+
+
+    return (
+        year +
+        "-" +
+        String(mm)
+        .padStart(
+            2,
+            "0"
+        ) +
+        "-" +
+        String(dd)
+        .padStart(
+            2,
+            "0"
+        )
+    );
+
+}
+
+
+
+/* ================================
+   GENDER
+================================ */
+
+function extractGender(
+    text
+) {
+
+    if (
+        /\bLELAKI\b/
+        .test(text) ||
+
+        /\bMALE\b/
+        .test(text)
+    ) {
+
+        return "MALE";
 
     }
 
 
     if (
-      addressLines.length === 0
+        /\bPEREMPUAN\b/
+        .test(text) ||
+
+        /\bFEMALE\b/
+        .test(text)
     ) {
 
-      return null;
+        return "FEMALE";
+
+    }
+
+
+    return null;
+
+}
+
+
+
+/* ================================
+   NATIONALITY
+================================ */
+
+function extractNationality(
+    text
+) {
+
+    if (
+        /\bWARGANEGARA\b/
+        .test(text)
+    ) {
+
+        return "WARGANEGARA";
+
+    }
+
+
+    if (
+        /\bCITIZEN\b/
+        .test(text)
+    ) {
+
+        return "CITIZEN";
+
+    }
+
+
+    return null;
+
+}
+
+
+
+/* ================================
+   NAME
+================================ */
+
+function extractName(
+    text
+) {
+
+    const lines =
+        text
+        .split("\n")
+        .map(
+            line =>
+            line.trim()
+        )
+        .filter(
+            Boolean
+        );
+
+
+    const ignore = [
+
+        "MALAYSIA",
+
+        "KAD PENGENALAN",
+
+        "IDENTITY CARD",
+
+        "WARGANEGARA",
+
+        "CITIZEN",
+
+        "LELAKI",
+
+        "PEREMPUAN",
+
+        "MALE",
+
+        "FEMALE"
+
+    ];
+
+
+    for (
+        const line
+        of lines
+    ) {
+
+        const upper =
+            line.toUpperCase();
+
+
+        if (
+            ignore.includes(
+                upper
+            )
+        ) {
+
+            continue;
+
+        }
+
+
+        if (
+            /\d{6}[-\s]?\d{2}[-\s]?\d{4}/
+            .test(line)
+        ) {
+
+            continue;
+
+        }
+
+
+        if (
+            /^[A-Z @'.\/-]{4,}$/i
+            .test(line)
+        ) {
+
+            const words =
+                line
+                .trim()
+                .split(
+                    /\s+/
+                );
+
+
+            if (
+                words.length >=
+                2
+            ) {
+
+                return upper;
+
+            }
+
+        }
+
+    }
+
+
+    return null;
+
+}
+
+
+
+/* ================================
+   ADDRESS
+================================ */
+
+function extractAddress(
+    text
+) {
+
+    const lines =
+        text
+        .split("\n")
+        .map(
+            line =>
+            line.trim()
+        )
+        .filter(
+            Boolean
+        );
+
+
+    const indicator =
+        /\b(NO\.?|JALAN|JLN|LORONG|TAMAN|KAMPUNG|KG\.?|BANDAR|PERSIARAN|APARTMENT|PANGSAPURI|DESA|SEKSYEN)\b/i;
+
+
+    const addressLines =
+        [];
+
+
+    for (
+        let i = 0;
+        i < lines.length;
+        i++
+    ) {
+
+        if (
+            indicator.test(
+                lines[i]
+            )
+        ) {
+
+            addressLines.push(
+                lines[i]
+            );
+
+
+            for (
+                let j =
+                    i + 1;
+
+                j <
+                Math.min(
+                    i + 4,
+                    lines.length
+                );
+
+                j++
+            ) {
+
+                const next =
+                    lines[j];
+
+
+                if (
+                    /WARGANEGARA|CITIZEN|LELAKI|PEREMPUAN|MALE|FEMALE/i
+                    .test(next)
+                ) {
+
+                    break;
+
+                }
+
+
+                addressLines.push(
+                    next
+                );
+
+            }
+
+
+            break;
+
+        }
+
+    }
+
+
+    if (
+        addressLines.length ===
+        0
+    ) {
+
+        return null;
 
     }
 
 
     return addressLines
-      .join(", ")
-      .toUpperCase();
+        .join(", ")
+        .toUpperCase();
 
-  }
-
-
-  /*
-   ========================================
-   OUTPUT
-   ========================================
-  */
-
-  function showJSON() {
-
-    output.value =
-      JSON.stringify(
-        extractedData,
-        null,
-        2
-      );
-
-    setActiveTab(0);
-
-  }
+}
 
 
-  function showRawText() {
 
-    output.value =
-      rawOCRText || "";
+/* ================================
+   DISPLAY
+================================ */
 
-    setActiveTab(1);
-
-  }
-
-
-  function setActiveTab(index) {
-
-    const tabs =
-      document.querySelectorAll(
-        ".tab"
-      );
-
-
-    tabs.forEach(
-      (tab, i) => {
-
-        if (
-          i === index
-        ) {
-
-          tab.classList.add(
-            "active"
-          );
-
-        }
-
-        else {
-
-          tab.classList.remove(
-            "active"
-          );
-
-        }
-
-      }
-    );
-
-  }
-
-
-  /*
-   ========================================
-   COPY OUTPUT
-   ========================================
-  */
-
-  async function copyOutput() {
-
-    try {
-
-      await navigator.clipboard.writeText(
-        output.value
-      );
-
-      const button =
-        document.getElementById(
-          "copyButton"
-        );
-
-      const original =
-        button.innerText;
-
-      button.innerText =
-        "Copied";
-
-
-      setTimeout(
-        () => {
-
-          button.innerText =
-            original;
-
-        },
-        1500
-      );
-
-    }
-
-    catch(error) {
-
-      alert(
-        "Unable to copy output."
-      );
-
-    }
-
-  }
-
-
-  /*
-   ========================================
-   UI HELPERS
-   ========================================
-  */
-
-  function setValue(
-    id,
-    value,
-    className = ""
-  ) {
-
-    const element =
-      document.getElementById(id);
-
-    element.innerText =
-      value;
-
-    element.className =
-      "field-value " +
-      className;
-
-  }
-
-
-  function displayNullable(
+function displayResult(
     id,
     value
-  ) {
+) {
+
+    const element =
+        document.getElementById(
+            id
+        );
+
 
     if (
-      value === null ||
-      value === undefined ||
-      value === ""
+        value === null ||
+        value === ""
     ) {
 
-      setValue(
-        id,
-        "null",
-        "empty"
-      );
+        element.textContent =
+            "null";
+
+
+        element.className =
+            "result-value null";
 
     }
 
     else {
 
-      setValue(
-        id,
-        value
-      );
+        element.textContent =
+            value;
+
+
+        element.className =
+            "result-value";
 
     }
 
-  }
+}
 
 
-  function resetResults() {
 
-    extractedData = {
+/* ================================
+   RESET
+================================ */
 
-      IC_Number: null,
-      Full_Name: null,
-      Date_of_Birth: null,
-      Gender: null,
-      Address: null,
-      Nationality: null
+function resetResults() {
+
+    resultData = {
+
+        IC_Number: null,
+
+        Full_Name: null,
+
+        Date_of_Birth: null,
+
+        Gender: null,
+
+        Address: null,
+
+        Nationality: null
 
     };
 
 
-    rawOCRText = "";
-
-
     [
-      "icNumber",
-      "fullName",
-      "dob",
-      "gender",
-      "address",
-      "nationality"
+
+        "icNumber",
+
+        "fullName",
+
+        "dob",
+
+        "gender",
+
+        "address",
+
+        "nationality"
+
     ]
     .forEach(
-      id =>
-        displayNullable(
-          id,
-          null
+        id =>
+        displayResult(
+            id,
+            null
         )
     );
 
 
-    setValue(
-      "documentType",
-      "Processing..."
-    );
+    jsonOutput.value =
+        JSON.stringify(
+            resultData,
+            null,
+            2
+        );
 
-    setValue(
-      "confidence",
-      "-"
-    );
+
+    resultStatus.className =
+        "result-status";
+
+
+    resultStatus.textContent =
+        "○ Waiting for document";
 
 
     progressBar.style.width =
-      "0%";
+        "0%";
 
 
-    output.value = "";
+    progressPercent.textContent =
+        "0%";
 
-  }
+}
+
+
+
+/* ================================
+   COPY
+================================ */
+
+async function copyResult() {
+
+    try {
+
+        await navigator
+        .clipboard
+        .writeText(
+            jsonOutput.value
+        );
+
+
+        alert(
+            "JSON result copied."
+        );
+
+    }
+
+    catch(error) {
+
+        alert(
+            "Unable to copy result."
+        );
+
+    }
+
+}
 
 </script>
+
 
 </body>
 </html>
